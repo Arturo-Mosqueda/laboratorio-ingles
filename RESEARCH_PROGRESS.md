@@ -64,7 +64,7 @@ This file is updated throughout implementation so decisions and completed work r
 - [x] Comprehensive final test implemented.
 - [x] Voice-practice prompt cards implemented.
 - [x] Responsive/accessibility QA completed.
-- [ ] GitHub Pages deployed and verified.
+- [x] GitHub Pages deployed and verified.
 
 ## QA results — 2026-07-18
 
@@ -75,3 +75,11 @@ This file is updated throughout implementation so decisions and completed work r
 - A 390 px browser test initially detected horizontal overflow from the decorative hero pseudo-element. The pseudo-element is now disabled at narrow widths, and the repeated test passed with no horizontal overflow.
 - Desktop visual checks passed for the dashboard, topic lesson and final-test question layout.
 - Final repeated browser QA passed after balancing every quick test to four direct multiple-choice, two written-answer and two reading questions.
+
+## Deployment — 2026-07-18
+
+- Implementation commit: `6847e0693980eff120b0a53556a32d352d9b36aa`.
+- GitHub Pages workflow run `29657234785` completed successfully in 14 seconds.
+- Production verification returned HTTP 200.
+- Production page title verified as `English Lab · B2 Grammar`.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
