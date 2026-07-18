@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const { topics, exercises } = window.GrammarLabData;
+  const { topics, guides, exercises } = window.GrammarLabData;
   const storageKey = "english-lab-progress-v2";
   const app = document.querySelector("#app");
   const nav = document.querySelector("#main-nav");
@@ -76,9 +76,9 @@
         <aside class="hero-card"><div class="level-ring" style="--score:${overall.mastered / exercises.length * 360}deg"><div><strong>${overall.mastered}</strong><span>mastered</span></div></div>
           <div class="hero-stats"><div><strong>${exercises.length}</strong><span>questions</span></div><div><strong>${overall.attempted}</strong><span>attempted</span></div><div><strong>${overall.accuracy}%</strong><span>accuracy</span></div></div>
           <p>Your work is saved in this browser. A question is mastered when your latest answer is correct.</p></aside></section>
-      <section class="section-wrap"><div class="section-heading"><div><span class="eyebrow">Course map</span><h2>Choose a grammar unit</h2></div><p>Each unit includes a concise lesson, all 14 practice questions, an eight-question test, a reading task and a voice-practice prompt.</p></div>
+      <section class="section-wrap"><div class="section-heading"><div><span class="eyebrow">Course map</span><h2>Choose a grammar unit</h2></div><p>Each unit includes a detailed lesson, a complete topic practice bank, an eight-question test, reading tasks and a topic-specific voice prompt.</p></div>
         <div class="topic-grid">${topics.map(renderTopicCard).join("")}</div></section>
-      <section class="final-banner"><div><span class="eyebrow">Comprehensive assessment</span><h2>Ready for the final test?</h2><p>Complete 35 balanced questions covering all seven units.</p></div><button class="primary" data-action="final-test">Start final test →</button></section>
+      <section class="final-banner"><div><span class="eyebrow">Comprehensive assessment</span><h2>Ready for the final test?</h2><p>Complete ${exercises.filter((item) => item.finalTest).length} balanced questions covering all seven units.</p></div><button class="primary" data-action="final-test">Start final test →</button></section>
     </div>`;
   }
 
@@ -90,16 +90,24 @@
       <div class="topic-footer"><span>${stats.mastered} mastered</span><button class="card-link" data-action="topic" data-topic="${topic.id}">Open unit →</button></div></article>`;
   }
 
+  function renderDeepGuide(topic) {
+    const guide = guides[topic.id];
+    const diagram = guide.diagram === "decision" ? `<figure class="grammar-diagram decision-diagram"><figcaption>Decision map: choose from the context</figcaption><div class="diagram-start">What controls the future event?</div><div class="diagram-grid"><div><span>1</span><strong>Official time?</strong><p>Use present simple for a timetable or programme.</p><code>The train leaves at six.</code></div><div><span>2</span><strong>Confirmed arrangement?</strong><p>Use present continuous for an organised personal plan.</p><code>We’re meeting at six.</code></div><div><span>3</span><strong>Prior intention or evidence?</strong><p>Use be going to for an earlier decision or evidence now.</p><code>It’s going to rain.</code></div><div><span>4</span><strong>Decision now or opinion?</strong><p>Use will for reactions, offers, promises and beliefs.</p><code>I’ll help you.</code></div></div></figure>` : guide.diagram === "timeline" ? `<figure class="grammar-diagram timeline-diagram"><figcaption>Timeline: enter the middle of a future activity</figcaption><div class="timeline"><span>NOW</span><i></i><div><strong>8:00–10:00</strong><b>will be working</b></div><i></i><span>LATER</span></div><p>At 9:00, the activity has already started and has not finished. The future continuous places the viewpoint inside that activity.</p></figure>` : "";
+    return `<section class="deep-guide" id="detailed-guide"><span class="eyebrow">Detailed guide</span><h2>Understand the choice, not just the form</h2><div class="guide-intro">${guide.intro.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}</div>${diagram}
+      <div class="guide-columns"><section><h3>Questions to ask yourself</h3><ol>${guide.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join("")}</ol></section><section><h3>Common mistakes</h3><ul>${guide.mistakes.map((mistake) => `<li>${escapeHtml(mistake)}</li>`).join("")}</ul></section></div>
+      <div class="contrast-board"><h3>Compare the meaning</h3>${guide.contrasts.map(([example, meaning]) => `<article><code>${escapeHtml(example)}</code><p>${escapeHtml(meaning)}</p></article>`).join("")}</div></section>`;
+  }
+
   function renderTopic() {
     const topic = topicById(activeTopic);
     const items = exercises.filter((item) => item.topic === topic.id);
     const stats = statsFor(items);
-    const voicePrompt = `You are my English speaking partner. Help me practise ${topic.title.toLowerCase()} at B2 level. Speak only in English. First ask me whether I want a real-life role-play, a grammar explanation, a guided conversation or a quick oral quiz. Correct my mistakes politely, explain them briefly and ask me to repeat the corrected sentence. Do not give me every answer immediately.`;
+    const voicePrompt = guides[topic.id].voicePrompt;
     app.innerHTML = `<div class="lesson-page"><section class="lesson-hero topic-hero"><button class="back-link" data-action="home">← All topics</button><span class="eyebrow">Unit ${topic.number} · ${topic.subtitle}</span><h1>${topic.title}</h1><p>${topic.description}</p>
       <div class="topic-actions"><button class="primary" data-action="topic-practice" data-topic="${topic.id}">Practise all ${items.length}</button><button class="secondary" data-action="quick-test" data-topic="${topic.id}">Take the 8-question test</button></div>
       <div class="unit-progress"><span><strong>${stats.mastered}</strong> of ${items.length} mastered</span><span><strong>${stats.accuracy}%</strong> historical accuracy</span></div></section>
       <div class="lesson-layout"><aside class="lesson-toc"><span>In this unit</span>${topic.lesson.map((item, index) => `<a href="#rule-${index + 1}">${index + 1}. ${escapeHtml(item[0])}</a>`).join("")}<button class="primary" data-action="quick-test" data-topic="${topic.id}">Quick test →</button></aside>
-      <article class="lesson-content">${topic.lesson.map((item, index) => `<section class="lesson-section" id="rule-${index + 1}"><header class="lesson-section-head"><span>${String(index + 1).padStart(2, "0")}</span><div><small>${topic.subtitle}</small><h2>${escapeHtml(item[0])}</h2></div></header><div class="lesson-body"><p>${escapeHtml(item[1])}</p><div class="example-stack"><p><span>✓</span>${escapeHtml(item[2])}</p></div></div></section>`).join("")}
+      <article class="lesson-content">${renderDeepGuide(topic)}${topic.lesson.map((item, index) => `<section class="lesson-section" id="rule-${index + 1}"><header class="lesson-section-head"><span>${String(index + 1).padStart(2, "0")}</span><div><small>${topic.subtitle}</small><h2>${escapeHtml(item[0])}</h2></div></header><div class="lesson-body"><p>${escapeHtml(item[1])}</p><div class="example-stack"><p><span>✓</span>${escapeHtml(item[2])}</p></div><div class="rule-method"><strong>How to use this rule</strong><p>Read the whole context, identify the speaker’s meaning, build the complete structure and then check subject–verb form and word order.</p></div></div></section>`).join("")}
       <section class="lesson-finish"><span class="eyebrow">Apply the rules</span><h2>Practise this unit</h2><p>Work through every multiple-choice, written and reading question in this topic.</p><button class="primary" data-action="topic-practice" data-topic="${topic.id}">Start all ${items.length} questions →</button></section>
       <section class="voice-card"><div class="voice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M9 21h6"/></svg></div><div><span class="eyebrow">Optional speaking practice</span><h2>Practice with ChatGPT Voice</h2><p>Copy this text, open a voice conversation and use it as your starting prompt. This is a text-only helper and does not connect to any external service.</p><pre>${escapeHtml(voicePrompt)}</pre><button class="secondary" data-action="copy-prompt" data-prompt="${escapeHtml(voicePrompt)}">Copy prompt</button><span class="copy-status" aria-live="polite"></span></div></section>
       </article></div></div>`;
@@ -129,7 +137,7 @@
     const progressWidth = ((current + (answered ? 1 : 0)) / session.items.length) * 100;
     const correct = answered && isCorrectAnswer(exercise);
     app.innerHTML = `<section class="practice-page"><div class="quiz-layout"><aside class="quiz-sidebar"><button class="back-link" data-action="exit-session">← Exit session</button><span class="eyebrow">${session.kind === "final" ? "All seven units" : escapeHtml(topic.title)}</span><h2>${escapeHtml(session.title)}</h2><div class="session-stat"><span>Progress</span><strong>${current + 1} / ${session.items.length}</strong></div><div class="progress-track"><span style="width:${progressWidth}%"></span></div><div class="session-stat"><span>Correct</span><strong>${sessionCorrect}</strong></div><p class="sidebar-tip"><strong>Strategy:</strong> identify the context before choosing the grammar form.</p></aside>
-      <article class="question-card ${exercise.passage ? "reading-question" : ""}"><div class="question-meta"><span class="topic-pill">${escapeHtml(topic.icon)} ${escapeHtml(topic.title)}</span><span>${exercise.type === "text" ? "Written answer" : "Multiple choice"}</span></div>
+      <article class="question-card ${exercise.passage ? "reading-question" : ""}"><div class="question-meta"><span class="topic-pill">${escapeHtml(topic.icon)} ${escapeHtml(topic.title)}</span><span>${escapeHtml(exercise.taskType || (exercise.type === "text" ? "Written answer" : "Multiple choice"))}</span></div>
       ${exercise.passage ? `<div class="reading-box"><span>Reading task</span><h3>${escapeHtml(exercise.passageTitle)}</h3><p>${escapeHtml(exercise.passage)}</p></div>` : ""}<p class="instruction">${escapeHtml(exercise.instruction)}</p><h2>${escapeHtml(exercise.prompt)}</h2>
       ${exercise.type === "choice" ? renderOptions(exercise) : `<div class="written-answer"><label for="written-input">Your answer</label><input id="written-input" type="text" autocomplete="off" spellcheck="false" value="${escapeHtml(typedAnswer)}" ${answered ? "disabled" : ""}><small>Capitalisation and final punctuation are ignored.</small></div>`}
       ${answered ? `<div class="feedback ${correct ? "success" : "error"}" aria-live="polite"><div class="feedback-title"><span>${correct ? "✓" : "!"}</span><strong>${correct ? "Correct" : "Not quite"}</strong></div><p>${escapeHtml(exercise.explanation)}</p>${!correct ? `<small><strong>Accepted answer:</strong> ${exercise.type === "choice" ? escapeHtml(exercise.options[exercise.answer]) : escapeHtml(exercise.answers[0])}</small>` : ""}</div>` : ""}

@@ -83,3 +83,61 @@ This file is updated throughout implementation so decisions and completed work r
 - Production verification returned HTTP 200.
 - Production page title verified as `English Lab · B2 Grammar`.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
+
+## Expansion research — 2026-07-18
+
+### Requested scope
+
+- Expand `Future choices` and `Future continuous` with more exercises and more varied task types.
+- Make the lesson explanations substantially more detailed and didactic.
+- Add diagrams where they clarify a decision or timeline.
+- Replace the shared voice-practice template with a genuinely topic-specific prompt for every unit.
+- Preserve the existing visual design.
+
+### Sources and findings
+
+- British Council distinguishes four core future-choice signals: spontaneous decision or offer (`will`), prior intention or visible evidence (`be going to`), confirmed personal arrangement (present continuous), and timetable or programme (present simple).
+  - https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2/future-forms-will-be-going-present-continuous
+- British Council’s intermediate future reference confirms the present simple for schedules, present continuous for arrangements, `will` for beliefs/offers/promises, and `be going to` for intentions and present evidence.
+  - https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/talking-about-future
+- British Council describes future continuous as `will be + -ing` for an action in progress at a future point, a temporary future situation, and neutral questions about another person’s plans.
+  - https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2/future-continuous-future-perfect
+- BBC Learning English confirms the core future-continuous structure and its future-time viewpoint.
+  - https://downloads.bbc.co.uk/learningenglish/eiam/unit-1/190111_future_continuous.pdf
+- Cambridge B2 task design supports varied original formats such as multiple-choice cloze, open cloze, sentence transformation and contextual reading. Existing source note remains applicable:
+  - https://www.cambridgeenglish.org/exams-and-tests/qualifications/first/format/
+
+### Copyright decision
+
+- Published exercise banks will not be copied verbatim. The new questions will be original, while their grammatical coverage and task formats are informed by the sources above.
+
+### Expansion progress
+
+- [x] Research recorded.
+- [x] Topic-specific voice prompts added for all seven units.
+- [x] Future choices explanation and diagram expanded.
+- [x] Future continuous explanation and timeline expanded.
+- [x] New varied exercises added to both future units.
+- [x] Counts, tests and final-test balance recalculated.
+- [x] Browser and content QA repeated.
+- [ ] GitHub Pages redeployed and verified.
+
+### Expansion implementation
+
+- Added detailed guides to all seven units with introductory reasoning, diagnostic questions, meaning contrasts and common mistakes.
+- Added a four-branch decision diagram to `Future choices` covering schedules, arrangements, prior intentions/evidence and immediate decisions/opinions.
+- Added a future-time timeline to `Future continuous` showing the viewpoint inside an unfinished future activity.
+- Replaced the generic speaking prompt with seven different prompts. Each prompt now names its own grammar targets, scenario type, correction method and speaking sequence.
+- Added 10 original exercises to `Future choices` and 10 to `Future continuous`.
+- Expanded the complete bank from 98 to 118 questions.
+- `Future choices`: 24 questions. `Future continuous`: 24 questions. Other units: 14 questions each.
+- Added task formats including form identification, dialogue completion, error correction, sentence transformation, schedule reasoning, meaning contrast, evidence-based prediction, structure building, negative formation, question transformation, timeline reasoning, state-verb checks, reading cloze and reading open cloze.
+- Updated total written-answer tasks to 30 and reading-based questions to 25.
+- Updated the comprehensive final test from 35 to 39 questions while keeping all seven units represented.
+
+### Expansion QA
+
+- JavaScript syntax checks passed.
+- Automated browser QA passed for the new totals, both diagrams, different topic-specific prompts, the copy action, varied task types, the 39-question final test and the 390 px layout.
+- Visual inspection passed for both detailed future guides and diagrams.
+- No future-perfect material was reintroduced.

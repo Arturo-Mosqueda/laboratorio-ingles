@@ -39,10 +39,84 @@ const topics = [
   ]}
 ];
 
+const guides = {
+  "future-choices": {
+    intro: [
+      "English does not have one single future tense. The form changes according to how the speaker sees the event: as a decision made now, an earlier intention, a confirmed arrangement, an official schedule or a prediction.",
+      "Do not choose by translating from your first language. First identify the evidence in the context. Words such as ‘I think’ suggest an opinion, a reservation suggests an arrangement, and a published time suggests a schedule.",
+      "Two forms can sometimes describe the same real event, but they present it differently. ‘I’m going to meet Ana’ highlights an intention; ‘I’m meeting Ana at six’ highlights the confirmed arrangement."
+    ],
+    questions: ["Is it controlled by a timetable or programme?", "Is there a confirmed time, place or agreement?", "Was the intention decided before speaking, or is there visible evidence now?", "Is the speaker deciding, offering, promising or predicting from opinion at this moment?"],
+    contrasts: [
+      ["I think it will rain.", "An opinion or mental prediction; no present evidence is mentioned."],
+      ["Look at those clouds. It’s going to rain.", "A prediction based on evidence visible now."],
+      ["I’m meeting Jo at six.", "A personal arrangement already organised with another person."],
+      ["The train leaves at six.", "A timetable controlled by an organisation."]
+    ],
+    mistakes: ["Do not use present simple for an ordinary personal plan: ‘I meet Jo tomorrow’ is usually unnatural without a timetable context.", "Use the base verb after will and going to: ‘will go’ and ‘going to go’, not ‘will goes’ or ‘going to going’."],
+    diagram: "decision",
+    voicePrompt: "You are my B2 English speaking coach. Help me practise choosing between will, be going to, present continuous and present simple for future meaning. Start with a short real-life situation such as planning a weekend, responding to a sudden problem, reading a timetable or predicting from visible evidence. Ask me one question at a time and require a full spoken sentence. After every answer, identify the context signal, tell me whether I chose the best future form and ask me to repeat a corrected version when necessary. Include at least one spontaneous decision, one prior intention, one confirmed arrangement, one timetable and one evidence-based prediction. Speak only in English and do not reveal the answer before I try."
+  },
+  "future-continuous": {
+    intro: [
+      "The future continuous places the listener inside an activity at a later moment. It answers the question ‘What will be in progress then?’ rather than presenting the activity as one complete event.",
+      "Build it with will + be + verb-ing. Will and be never change with the subject: I will be working, she will be working, they will be working.",
+      "It is also useful for neutral questions about expected plans. ‘Will you be driving?’ often sounds less like a request than ‘Will you drive?’ because it asks about the person’s existing schedule."
+    ],
+    questions: ["Is a specific future time or period given?", "Will the action be in progress at that time?", "Am I asking neutrally about someone’s expected plans?", "Is the verb an action verb that can normally take a continuous form?"],
+    contrasts: [
+      ["I’ll write the report tonight.", "The report is presented as a future decision or complete task."],
+      ["I’ll be writing the report at eight.", "At eight, the writing process will be in progress."],
+      ["Will you use the car?", "This can sound like a request or a question about willingness."],
+      ["Will you be using the car?", "A neutral question about an expected plan or schedule."]
+    ],
+    mistakes: ["Keep all three parts: will + be + -ing. ‘Will working’ and ‘will be work’ are incomplete.", "Avoid continuous forms with state verbs such as know, believe, need, understand and own in their normal state meanings."],
+    diagram: "timeline",
+    voicePrompt: "You are my B2 English speaking coach. Practise the future continuous with me through a detailed schedule for tomorrow. Give me future times and situations, then ask what I, another person or a team will be doing at each moment. Make me form affirmative, negative and question sentences with will be + verb-ing. Include a polite question about someone’s plans and one contrast between future simple and future continuous. Correct the exact part of the structure that is wrong, explain the timeline viewpoint briefly and ask me to repeat the corrected sentence. Speak only in English and wait for my answer before continuing."
+  },
+  "time-clauses": {
+    intro: ["Future time clauses refer to the future but normally use a present form after when, before, after, until, as soon as, once and while.", "Think of the time clause as the clock or condition for the main future action. The main clause may contain will; the time clause normally does not."],
+    questions: ["Which conjunction introduces the time clause?", "Is the activity a simple event or an action in progress?", "Which clause contains the main future result?"],
+    contrasts: [["I’ll call when I arrive.", "Correct: present simple in the time clause."], ["I’ll call when I will arrive.", "Usually incorrect: will is unnecessary after when."]],
+    mistakes: ["Do not automatically put will in both clauses.", "Use present continuous after while when an activity will be in progress."],
+    voicePrompt: "You are my B2 English speaking coach. Help me practise future time clauses with when, before, after, until, as soon as, once and while. Create a realistic sequence such as preparing for a trip or organising an event. Ask me to connect two future actions in full sentences, using will in the main clause and an appropriate present form in the time clause. Correct any unnecessary use of will after a time conjunction and ask me to repeat the corrected sentence. Speak only in English and include both simple events and one action in progress with while."
+  },
+  articles: {
+    intro: ["Article choice depends on whether a noun is countable, singular, specific and already identifiable to the listener.", "Choose a or an by sound rather than spelling; choose the when the listener can identify the noun; use zero article for many general plural and uncountable ideas."],
+    questions: ["Is the noun singular and countable?", "Is it new or already identifiable?", "Does the next word begin with a vowel sound?", "Is the noun a general plural or uncountable idea?"],
+    contrasts: [["I saw a dog.", "One dog introduced for the first time."], ["The dog followed me.", "The same dog is now identifiable."]],
+    mistakes: ["An hour but a university: the sound, not the first letter, decides a/an.", "Do not add the to every abstract or general noun."],
+    voicePrompt: "You are my B2 English speaking coach. Help me practise a, an, the and zero article. Describe a place or tell a short story in stages so that I must introduce new nouns and then refer to them again. Ask me to explain whether each noun is singular, countable, specific or general and whether the next sound is a vowel sound. Include geographical names, meals and one general uncountable noun. Correct my article choice briefly and ask me to repeat the complete noun phrase. Speak only in English."
+  },
+  determiners: {
+    intro: ["Demonstratives locate a noun in space, time or discourse, while possessive forms show ownership or association.", "A possessive determiner must be followed by a noun; a possessive pronoun replaces the complete noun phrase."],
+    questions: ["Is the noun singular or plural?", "Does it feel near or distant?", "Do I need a noun after the possessive form?", "Is the choice open or limited?"],
+    contrasts: [["This is my desk.", "My is followed by the noun desk."], ["That desk is mine.", "Mine replaces my desk."]],
+    mistakes: ["Do not write ‘this books’ or ‘those book’. Match number.", "Whose asks about ownership; who’s means who is or who has."],
+    voicePrompt: "You are my B2 English speaking coach. Create a role-play in an office, classroom or lost-property desk to practise this, that, these, those, possessive determiners, possessive pronouns, which, what and whose. Describe near and distant objects and ask me to identify ownership in full sentences. Include limited and open choices. Correct number agreement and the difference between my/mine and whose/who’s, then ask me to repeat the corrected phrase. Speak only in English."
+  },
+  distributives: {
+    intro: ["Distributives show whether we view members individually, as a complete pair, or as alternatives.", "Each and every take a singular noun and verb. Both takes a plural noun and verb. Either and neither normally refer to two alternatives."],
+    questions: ["Are there exactly two alternatives or a larger group?", "Do I mean the complete pair, one alternative or no alternative?", "Should the following noun and verb be singular or plural?"],
+    contrasts: [["Both routes are open.", "The complete pair is included."], ["Either route is fine.", "One route or the other can be chosen."], ["Neither route is open.", "Not one route and not the other."]],
+    mistakes: ["Use a singular noun after every: every student, not every students.", "Use a plural verb with both: both answers are correct."],
+    voicePrompt: "You are my B2 English speaking coach. Give me choices involving pairs and groups so I can practise each, every, all, both, either and neither. Use realistic decisions such as comparing two routes, assigning work to a team or reviewing two proposals. Ask me to justify whether I mean members individually, the complete group, one of two or none of two. Correct noun and verb agreement and ask me to repeat the full sentence. Speak only in English."
+  },
+  quantifiers: {
+    intro: ["Quantifier choice begins with the noun: is it plural countable or uncountable? Then decide whether the quantity is large, small, sufficient or insufficient.", "The small word a changes the viewpoint: few and little often mean not enough, while a few and a little mean some useful amount."],
+    questions: ["Is the noun countable or uncountable?", "Is the sentence positive, negative or a question?", "Is the quantity presented as sufficient or insufficient?", "Does enough come before a noun or after an adjective?"],
+    contrasts: [["Few people replied.", "The number is disappointingly small."], ["A few people replied.", "Some people replied; the small number is useful."], ["We have enough chairs.", "Enough comes before a noun."], ["The room is large enough.", "Enough comes after an adjective."]],
+    mistakes: ["Use many with plural countable nouns and much with uncountable nouns.", "Information, advice, equipment and furniture are normally uncountable."],
+    voicePrompt: "You are my B2 English speaking coach. Create a planning task for an event, trip or project so I can practise much, many, few, a few, little, a little, some, any and enough. Ask me about countable and uncountable resources, whether quantities are sufficient and where enough belongs in the sentence. Challenge me to explain the difference in meaning between few/a few and little/a little. Correct my quantifier and ask me to repeat the corrected sentence. Speak only in English."
+  }
+};
+
 const exercises = [];
 const mc = (topic, prompt, options, answer, explanation, instruction = "Choose the best answer.") => ({ topic, type: "choice", instruction, prompt, options, answer, explanation });
 const text = (topic, prompt, answers, explanation, instruction = "Write the missing words.") => ({ topic, type: "text", instruction, prompt, answers, explanation });
 const reading = (topic, title, passage, prompt, options, answer, explanation) => ({ ...mc(topic, prompt, options, answer, explanation, "Read the text and choose the best answer."), passageTitle: title, passage });
+const readingText = (topic, title, passage, prompt, answers, explanation) => ({ ...text(topic, prompt, answers, explanation, "Read the text and write the missing words."), passageTitle: title, passage });
+const tagged = (taskType, item) => ({ ...item, taskType });
 
 const banks = {
   "future-choices": [
@@ -160,7 +234,38 @@ const banks = {
 };
 
 Object.entries(banks).forEach(([topic, items]) => items.forEach((item, index) => {
-  exercises.push({ ...item, id: `${topic}-${String(index + 1).padStart(2, "0")}`, quickTest: [0, 1, 2, 3, 8, 9, 11, 12].includes(index), finalTest: [1, 3, 6, 9, 12].includes(index) });
+  exercises.push({ ...item, id: `${topic}-${String(index + 1).padStart(2, "0")}`, taskType: item.passage ? "Reading comprehension" : item.type === "text" ? "Open cloze" : "Multiple choice", quickTest: [0, 1, 2, 3, 8, 9, 11, 12].includes(index), finalTest: [1, 3, 6, 9, 12].includes(index) });
 }));
 
-window.GrammarLabData = { topics, exercises };
+const expansions = {
+  "future-choices": [
+    tagged("Form identification", mc("future-choices", "A colleague says, ‘The printer is out of paper.’ You reply, ‘I’ll get some.’ What does will express?", ["A published schedule", "A spontaneous decision", "A confirmed arrangement", "A prior intention"], 1, "The problem creates a decision at the moment of speaking. Will presents that immediate response.")),
+    tagged("Dialogue completion", text("future-choices", "Complete the reply: ‘We have no bread.’ ‘OK, I ___ some on my way home.’", ["will buy", "i'll buy", "ill buy"], "The speaker reacts immediately to new information, so will + base verb is the clearest choice.")),
+    tagged("Error correction", text("future-choices", "Correct the future form: ‘Look at the glass! It will fall.’", ["look at the glass! it is going to fall", "look at the glass, it is going to fall", "it is going to fall", "it's going to fall", "its going to fall"], "The speaker can see present evidence, so be going to makes the reason for the prediction explicit.")),
+    tagged("Sentence transformation", text("future-choices", "Rewrite with going to: ‘Nadia has decided to apply for the internship.’", ["nadia is going to apply for the internship", "nadia's going to apply for the internship", "nadias going to apply for the internship"], "The earlier decision is a prior intention, expressed with is going to + base verb.")),
+    tagged("Schedule reasoning", mc("future-choices", "Cinema programme: Screen 2 — 18:10. Which sentence reports the programme?", ["The film is going to start by personal intention.", "The film starts at 18:10.", "The film will starting at 18:10.", "The film is start at 18:10."], 1, "A cinema programme is an external schedule, so the present simple is the normal form.")),
+    tagged("Meaning contrast", mc("future-choices", "Which sentence most clearly shows a confirmed arrangement?", ["I think I’ll visit Sam one day.", "I’m going to visit Sam sometime.", "I’m visiting Sam at his office at four tomorrow.", "The office opens at four."], 2, "The exact time and place, together with the present continuous, present the visit as organised.")),
+    tagged("Evidence-based prediction", mc("future-choices", "The score is 4–0 and only one minute remains. Our team ___.", ["is going to win", "wins by timetable", "is winning next month", "will be win"], 0, "The current score is strong present evidence for a going-to prediction.")),
+    tagged("Error correction", text("future-choices", "Correct the arrangement: ‘We meeting the architect at eleven tomorrow.’", ["we are meeting the architect at eleven tomorrow", "we're meeting the architect at eleven tomorrow", "were meeting the architect at eleven tomorrow"], "Present continuous needs the correct form of be before the -ing form.")),
+    tagged("Reading cloze", reading("future-choices", "Launch day", "The product launch is fully organised. Guests are arriving at nine, according to the invitations. The presentation starts at 9:30. Mia has just noticed that the welcome sign is missing and says she will print one now.", "Why does Mia use will in ‘I will print one now’?", ["It is an official timetable.", "It is a reaction and decision made now.", "It is visible evidence for a prediction.", "It is a confirmed arrangement with a guest."], 1, "Mia reacts to the newly noticed problem and makes the decision as she speaks.")),
+    tagged("Reading open cloze", readingText("future-choices", "Launch day", "The product launch is fully organised. Guests are arriving at nine, according to the invitations. The presentation starts at 9:30. Mia has just noticed that the welcome sign is missing and says she will print one now.", "Complete the scheduled event: ‘The presentation ___ at 9:30.’", ["starts"], "The programme fixes the time, so present simple reports the scheduled event."))
+  ],
+  "future-continuous": [
+    tagged("Structure builder", mc("future-continuous", "Choose the complete structure for an action in progress later.", ["will + verb-ing", "will be + verb-ing", "be will + verb", "will being + verb"], 1, "Future continuous always contains will, be and the -ing form in that order.")),
+    tagged("Negative form", text("future-continuous", "Complete the negative: ‘At lunchtime, I ___ at my desk.’ (not / work)", ["will not be working", "won't be working", "wont be working"], "Place not after will; the rest of the structure remains be + working.")),
+    tagged("Question transformation", text("future-continuous", "Turn this into a neutral question about plans: ‘You will use the car this evening.’", ["will you be using the car this evening", "will you be using the car this evening?"], "Invert will and the subject, then keep be + verb-ing.")),
+    tagged("Error correction", text("future-continuous", "Correct the structure: ‘This time tomorrow, she will be fly to Rome.’", ["this time tomorrow, she will be flying to rome", "this time tomorrow she will be flying to rome", "she will be flying to rome"], "After will be, use the -ing form: flying.")),
+    tagged("Timeline reasoning", mc("future-continuous", "The meeting runs from 2:00 to 4:00. What will be happening at 3:00?", ["The team will be meeting.", "The team will meet yesterday.", "The team is meet at three.", "The team will be met."], 0, "Three o’clock falls inside the meeting period, so the activity will be in progress.")),
+    tagged("Meaning contrast", mc("future-continuous", "Which sentence places us in the middle of the journey?", ["We’ll travel to Bristol tomorrow.", "At noon, we’ll be travelling to Bristol.", "We travel to Bristol yesterday.", "We’ll be travel to Bristol."], 1, "At noon identifies a viewpoint inside the ongoing journey.")),
+    tagged("Politeness and intention", mc("future-continuous", "You want to know a colleague’s existing plan, not ask them to change it. Choose the best question.", ["Will you open the office?", "Will you be opening the office tomorrow?", "Do you opening the office?", "Will be you opening the office?"], 1, "Future continuous asks neutrally about what is expected to happen.")),
+    tagged("State-verb check", mc("future-continuous", "Which sentence is natural?", ["At five, I’ll be knowing the result.", "At five, I’ll know the result.", "At five, I will be needing the answer.", "At five, I’ll be owning the car."], 1, "Know normally describes a state, so the simple form is preferred.")),
+    tagged("Reading timeline", reading("future-continuous", "A day at the conference", "At 9:00, Lena will be welcoming visitors. The opening talk runs from 9:30 to 10:15. At ten, Omar will be interpreting the speaker’s questions. During lunch, the technical team will not be working in the main hall.", "What will Omar be doing at ten?", ["He will be welcoming visitors.", "He will be interpreting questions.", "He will not be at the conference.", "He interprets yesterday."], 1, "Ten o’clock is inside the opening talk, when Omar’s interpreting will be in progress.")),
+    tagged("Reading open cloze", readingText("future-continuous", "A day at the conference", "At 9:00, Lena will be welcoming visitors. The opening talk runs from 9:30 to 10:15. At ten, Omar will be interpreting the speaker’s questions. During lunch, the technical team will not be working in the main hall.", "Complete: ‘During lunch, the technical team ___ in the main hall.’ (not / work)", ["will not be working", "won't be working", "wont be working"], "The text describes a negative activity over a future period, so use will not be working."))
+  ]
+};
+
+Object.entries(expansions).forEach(([topic, items]) => items.forEach((item, index) => {
+  exercises.push({ ...item, id: `${topic}-extra-${String(index + 1).padStart(2, "0")}`, quickTest: false, finalTest: index === 0 || index === 8 });
+}));
+
+window.GrammarLabData = { topics, guides, exercises };

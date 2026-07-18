@@ -5,11 +5,12 @@ An English-only interactive B2 grammar course built with plain HTML, CSS and Jav
 ## Course structure
 
 - Seven grammar units
-- 98 original exercises: 14 per topic
-- 21 written-answer tasks
-- 21 reading-based questions
+- 118 original exercises
+- 24 exercises each for Future choices and Future continuous; 14 for every other unit
+- 30 written-answer tasks
+- 25 reading-based questions
 - An eight-question quick test for every unit
-- A balanced 35-question comprehensive final test
+- A balanced 39-question comprehensive final test
 - Topic progress and mistake review saved in the browser
 - Copyable text prompts for optional voice practice
 
