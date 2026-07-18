@@ -120,7 +120,7 @@ This file is updated throughout implementation so decisions and completed work r
 - [x] New varied exercises added to both future units.
 - [x] Counts, tests and final-test balance recalculated.
 - [x] Browser and content QA repeated.
-- [ ] GitHub Pages redeployed and verified.
+- [x] GitHub Pages redeployed and verified.
 
 ### Expansion implementation
 
@@ -141,3 +141,11 @@ This file is updated throughout implementation so decisions and completed work r
 - Automated browser QA passed for the new totals, both diagrams, different topic-specific prompts, the copy action, varied task types, the 39-question final test and the 390 px layout.
 - Visual inspection passed for both detailed future guides and diagrams.
 - No future-perfect material was reintroduced.
+
+### Expansion deployment
+
+- Implementation commit: `7b81be71e36299d614ef5a72b29ac42549cb3dd4`.
+- GitHub Pages workflow run `29657801110` completed successfully.
+- Production returned HTTP 200.
+- A cache-busted production check confirmed the expanded exercise bank and topic-specific voice prompts are present in `exercises.js`.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
