@@ -1,18 +1,24 @@
-# Laboratorio Inglés
+# English Lab
 
-Lección interactiva de gramática inglesa para nivel B2, creada únicamente con HTML, CSS y JavaScript nativo.
+An English-only interactive B2 grammar course built with plain HTML, CSS and JavaScript.
 
-## Contenido
+## Course structure
 
-- Formas de futuro y cláusulas temporales
-- Artículos, determinantes, distributivos y cuantificadores
-- 76 ejercicios, incluidas 16 preguntas de lectura contextual
-- Práctica mixta, repaso de errores y progreso guardado en el navegador
+- Seven grammar units
+- 98 original exercises: 14 per topic
+- 21 written-answer tasks
+- 21 reading-based questions
+- An eight-question quick test for every unit
+- A balanced 35-question comprehensive final test
+- Topic progress and mistake review saved in the browser
+- Copyable text prompts for optional voice practice
 
-## Uso local
+Future perfect is intentionally outside the course scope.
 
-Abre `index.html` en un navegador moderno. No hay dependencias, instalación ni proceso de compilación.
+## Local use
 
-## Publicación
+Open `index.html` in a modern browser. There are no dependencies and no build step.
 
-El workflow `.github/workflows/pages.yml` publica directamente los archivos estáticos en GitHub Pages después de cada push a `main`.
+## Deployment
+
+`.github/workflows/pages.yml` publishes the static files to GitHub Pages after every push to `main`.

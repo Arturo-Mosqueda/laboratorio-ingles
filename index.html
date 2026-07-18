@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Laboratorio interactivo de gramática inglesa para nivel B2.">
+    <meta name="description" content="An interactive B2 English grammar course with topic practice, reading tasks and written answers.">
     <meta name="theme-color" content="#0b7a68">
-    <title>Laboratorio Inglés · Gramática B2</title>
+    <title>English Lab · B2 Grammar</title>
     <link rel="stylesheet" href="styles.css">
     <script src="exercises.js" defer></script>
     <script src="app.js" defer></script>
@@ -13,27 +13,26 @@
   <body>
     <div class="app-shell">
       <header class="topbar">
-        <button class="brand" type="button" data-action="lesson" aria-label="Ir a la lección">
-          <span class="brand-mark" aria-hidden="true">LI</span>
-          <span><strong>Laboratorio Inglés</strong><small>Gramática B2</small></span>
+        <button class="brand" type="button" data-action="home" aria-label="Go to the course home">
+          <span class="brand-mark" aria-hidden="true">EL</span>
+          <span><strong>English Lab</strong><small>B2 Grammar</small></span>
         </button>
         <button class="menu-button" type="button" data-action="menu" aria-expanded="false" aria-controls="main-nav">
-          <span></span><span></span><span></span><span class="sr-only">Abrir menú</span>
+          <span></span><span></span><span></span><span class="sr-only">Open menu</span>
         </button>
-        <nav class="nav" id="main-nav" aria-label="Navegación principal">
-          <button type="button" data-action="lesson">Lección completa</button>
-          <button type="button" data-action="practice">Práctica mixta</button>
-          <button type="button" data-action="mistakes">Mis errores <span class="nav-count">0</span></button>
+        <nav class="nav" id="main-nav" aria-label="Main navigation">
+          <button type="button" data-action="home">Topics</button>
+          <button type="button" data-action="all-practice">All practice</button>
+          <button type="button" data-action="final-test">Final test</button>
+          <button type="button" data-action="mistakes">My mistakes <span class="nav-count">0</span></button>
         </nav>
       </header>
-
       <main id="app" tabindex="-1"></main>
-
       <footer>
-        <p>Laboratorio Inglés · Future forms &amp; determiners</p>
-        <button type="button" data-action="reset">Reiniciar progreso</button>
+        <p>English Lab · Seven B2 grammar units</p>
+        <button type="button" data-action="reset">Reset progress</button>
       </footer>
     </div>
-    <noscript>Necesitas activar JavaScript para usar los ejercicios interactivos.</noscript>
+    <noscript>You need JavaScript enabled to use the interactive exercises.</noscript>
   </body>
 </html>
