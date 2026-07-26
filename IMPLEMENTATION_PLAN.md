@@ -57,3 +57,42 @@ Future perfect simple and future perfect continuous will be removed from lessons
 - Voice practice is a text-only helper with a working copy button.
 - Existing local progress does not crash the new version.
 - GitHub Pages returns HTTP 200 after deployment.
+
+## Two-part exam expansion — 2026-07-26
+
+### Partial 1
+
+Add nine units:
+
+1. Present Tenses
+2. Past Tenses
+3. Passive Voice
+4. Active vs Passive Voice
+5. Mixed Tenses
+6. Narrative Tenses
+7. Time Expressions
+8. Choosing the Correct Tense
+9. B2 Story / Cloze Grammar Practice
+
+Each unit will include a detailed guide, diagnostic comparisons, original mixed-form exercises, written answers, contextual tasks, an eight-question quick test and a topic-specific speaking prompt.
+
+### Partial 2
+
+Keep the existing seven future/determiner units as Partial 2.
+
+### Assessment structure
+
+- A dedicated Partial 1 exam with five balanced questions from every new unit.
+- A dedicated Partial 2 exam using the existing balanced assessment set.
+- All-question practice remains available across both partials.
+- Results and saved mistakes continue to identify the source unit.
+
+### Completed implementation
+
+- Added 126 original Partial 1 questions across nine units.
+- Gave the three context-heavy units 18 questions each: Mixed Tenses, Choosing the Correct Tense and B2 Story / Cloze Practice.
+- Added 12 questions to each of the other six Partial 1 units.
+- Kept all 118 original questions as Partial 2.
+- Separated the assessments into a 45-question Partial 1 exam and a 39-question Partial 2 exam.
+- Preserved the existing interface design while adding separate course-map sections and navigation controls.
+- Kept all explanations, questions, feedback and topic-specific speaking prompts in English.

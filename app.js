@@ -68,31 +68,48 @@
 
   function renderHome() {
     const overall = statsFor(exercises);
+    const partial1Topics = topics.filter((topic) => topic.partial === 1);
+    const partial2Topics = topics.filter((topic) => topic.partial === 2);
+    const partial1Exam = exercises.filter((item) => item.exam === 1).length;
+    const partial2Exam = exercises.filter((item) => item.exam === 2).length;
     app.innerHTML = `<div class="home-page">
       <section class="hero"><div class="hero-copy"><span class="eyebrow">English-only · B2 foundation</span>
         <h1>Grammar you can<br><em>use with confidence</em></h1>
-        <p>Study seven focused units, practise every question by topic, complete short tests and finish with a comprehensive B2 grammar test.</p>
-        <div class="hero-actions"><button class="primary" data-action="topic" data-topic="future-choices">Start the first unit →</button><button class="secondary" data-action="all-practice">Practise all ${exercises.length} questions</button></div></div>
+        <p>Prepare for two partial exams through sixteen focused units, complete topic tests and master tense choice in realistic B2 contexts.</p>
+        <div class="hero-actions"><button class="primary" data-action="topic" data-topic="present-tenses">Start Partial 1 →</button><button class="secondary" data-action="all-practice">Practise all ${exercises.length} questions</button></div></div>
         <aside class="hero-card"><div class="level-ring" style="--score:${overall.mastered / exercises.length * 360}deg"><div><strong>${overall.mastered}</strong><span>mastered</span></div></div>
           <div class="hero-stats"><div><strong>${exercises.length}</strong><span>questions</span></div><div><strong>${overall.attempted}</strong><span>attempted</span></div><div><strong>${overall.accuracy}%</strong><span>accuracy</span></div></div>
           <p>Your work is saved in this browser. A question is mastered when your latest answer is correct.</p></aside></section>
-      <section class="section-wrap"><div class="section-heading"><div><span class="eyebrow">Course map</span><h2>Choose a grammar unit</h2></div><p>Each unit includes a detailed lesson, a complete topic practice bank, an eight-question test, reading tasks and a topic-specific voice prompt.</p></div>
-        <div class="topic-grid">${topics.map(renderTopicCard).join("")}</div></section>
-      <section class="final-banner"><div><span class="eyebrow">Comprehensive assessment</span><h2>Ready for the final test?</h2><p>Complete ${exercises.filter((item) => item.finalTest).length} balanced questions covering all seven units.</p></div><button class="primary" data-action="final-test">Start final test →</button></section>
+      <section class="section-wrap"><div class="section-heading"><div><span class="eyebrow">Partial 1 · Tense system</span><h2>Present, past, voice and narrative grammar</h2></div><p>Nine detailed units with extensive mixed-tense decisions, time markers, passive structures and B2 cloze stories.</p></div>
+        <div class="topic-grid">${partial1Topics.map((topic, index) => renderTopicCard(topic, index)).join("")}</div></section>
+      <section class="final-banner"><div><span class="eyebrow">Partial 1 assessment</span><h2>Test the complete tense system</h2><p>Complete ${partial1Exam} questions drawn from all nine Partial 1 units.</p></div><button class="primary" data-action="partial-1-test">Start Partial 1 test →</button></section>
+      <section class="section-wrap"><div class="section-heading"><div><span class="eyebrow">Partial 2 · Determiners and the future</span><h2>Continue with the original seven units</h2></div><p>Your existing future forms, articles, determiners and quantifier lessons remain intact, with their full practice banks.</p></div>
+        <div class="topic-grid">${partial2Topics.map((topic, index) => renderTopicCard(topic, index)).join("")}</div></section>
+      <section class="final-banner"><div><span class="eyebrow">Partial 2 assessment</span><h2>Review the original course topics</h2><p>Complete ${partial2Exam} questions covering all seven Partial 2 units.</p></div><button class="primary" data-action="partial-2-test">Start Partial 2 test →</button></section>
     </div>`;
   }
 
   function renderTopicCard(topic, index) {
     const items = exercises.filter((item) => item.topic === topic.id);
     const stats = statsFor(items);
-    return `<article class="topic-card"><div class="topic-top"><span class="topic-icon icon-${index + 1}">${topic.icon}</span><span class="question-count">${items.length} questions</span></div>
+    return `<article class="topic-card"><div class="topic-top"><span class="topic-icon icon-${(index % 7) + 1}">${topic.icon}</span><span class="question-count">${items.length} questions</span></div>
       <h3>${topic.title}</h3><p>${topic.description}</p><div class="mini-progress"><span style="width:${stats.mastered / items.length * 100}%"></span></div>
       <div class="topic-footer"><span>${stats.mastered} mastered</span><button class="card-link" data-action="topic" data-topic="${topic.id}">Open unit →</button></div></article>`;
   }
 
+  function renderGuideDiagram(guide) {
+    if (guide.diagram === "decision") return `<figure class="grammar-diagram decision-diagram"><figcaption>Decision map: choose from the context</figcaption><div class="diagram-start">What controls the future event?</div><div class="diagram-grid"><div><span>1</span><strong>Official time?</strong><p>Use present simple for a timetable or programme.</p><code>The train leaves at six.</code></div><div><span>2</span><strong>Confirmed arrangement?</strong><p>Use present continuous for an organised personal plan.</p><code>We’re meeting at six.</code></div><div><span>3</span><strong>Prior intention or evidence?</strong><p>Use be going to for an earlier decision or evidence now.</p><code>It’s going to rain.</code></div><div><span>4</span><strong>Decision now or opinion?</strong><p>Use will for reactions, offers, promises and beliefs.</p><code>I’ll help you.</code></div></div></figure>`;
+    if (guide.diagram === "timeline") return `<figure class="grammar-diagram timeline-diagram"><figcaption>Timeline: enter the middle of a future activity</figcaption><div class="timeline"><span>NOW</span><i></i><div><strong>8:00–10:00</strong><b>will be working</b></div><i></i><span>LATER</span></div><p>At 9:00, the activity has already started and has not finished. The future continuous places the viewpoint inside that activity.</p></figure>`;
+    if (guide.diagram === "present-system") return `<figure class="grammar-diagram decision-diagram"><figcaption>Present-tense map: choose the speaker’s viewpoint</figcaption><div class="diagram-start">How does the situation connect to now?</div><div class="diagram-grid"><div><span>1</span><strong>Routine, fact or state</strong><p>Present simple presents a stable or repeated situation.</p><code>I work here.</code></div><div><span>2</span><strong>In progress or temporary</strong><p>Present continuous places us inside a current activity.</p><code>I’m working now.</code></div><div><span>3</span><strong>Result or experience</strong><p>Present perfect connects a completed event to now.</p><code>I’ve finished it.</code></div><div><span>4</span><strong>Activity or duration</strong><p>Present perfect continuous looks back over ongoing activity.</p><code>I’ve been working.</code></div></div></figure>`;
+    if (guide.diagram === "past-system") return `<figure class="grammar-diagram decision-diagram"><figcaption>Past-tense map: organise the story timeline</figcaption><div class="diagram-start">Choose a viewpoint around the main past event</div><div class="diagram-grid"><div><span>1</span><strong>Main event</strong><p>Past simple advances the completed sequence.</p><code>The lights went out.</code></div><div><span>2</span><strong>Background</strong><p>Past continuous shows what was in progress.</p><code>We were eating.</code></div><div><span>3</span><strong>Earlier event</strong><p>Past perfect looks back from the past reference.</p><code>A cable had failed.</code></div><div><span>4</span><strong>Earlier duration</strong><p>Past perfect continuous explains a developing cause.</p><code>It had been overheating.</code></div></div></figure>`;
+    if (guide.diagram === "passive-system") return `<figure class="grammar-diagram decision-diagram"><figcaption>Passive builder: preserve tense while changing focus</figcaption><div class="diagram-start">Receiver + correct tense of BE + past participle</div><div class="diagram-grid"><div><span>1</span><strong>Simple</strong><p>Use is/are or was/were.</p><code>It is tested.</code></div><div><span>2</span><strong>Continuous</strong><p>Add being after the first form of be.</p><code>It is being tested.</code></div><div><span>3</span><strong>Perfect</strong><p>Add been after has, have or had.</p><code>It has been tested.</code></div><div><span>4</span><strong>Agent</strong><p>Add by only when the doer matters.</p><code>It was designed by Lin.</code></div></div></figure>`;
+    if (guide.diagram === "tense-choice") return `<figure class="grammar-diagram decision-diagram"><figcaption>Three-step selection method</figcaption><div class="diagram-start">TIME → ASPECT → VOICE</div><div class="diagram-grid"><div><span>1</span><strong>Set the reference time</strong><p>Now, unfinished time, finished past or earlier past?</p><code>today ≠ yesterday</code></div><div><span>2</span><strong>Choose the viewpoint</strong><p>Fact/result or activity/duration?</p><code>has written ≠ has been writing</code></div><div><span>3</span><strong>Choose the focus</strong><p>Should the agent or receiver be the subject?</p><code>They built it. ≠ It was built.</code></div><div><span>4</span><strong>Check the structure</strong><p>Verify auxiliaries, participles and agreement.</p><code>has been repaired</code></div></div></figure>`;
+    return "";
+  }
+
   function renderDeepGuide(topic) {
     const guide = guides[topic.id];
-    const diagram = guide.diagram === "decision" ? `<figure class="grammar-diagram decision-diagram"><figcaption>Decision map: choose from the context</figcaption><div class="diagram-start">What controls the future event?</div><div class="diagram-grid"><div><span>1</span><strong>Official time?</strong><p>Use present simple for a timetable or programme.</p><code>The train leaves at six.</code></div><div><span>2</span><strong>Confirmed arrangement?</strong><p>Use present continuous for an organised personal plan.</p><code>We’re meeting at six.</code></div><div><span>3</span><strong>Prior intention or evidence?</strong><p>Use be going to for an earlier decision or evidence now.</p><code>It’s going to rain.</code></div><div><span>4</span><strong>Decision now or opinion?</strong><p>Use will for reactions, offers, promises and beliefs.</p><code>I’ll help you.</code></div></div></figure>` : guide.diagram === "timeline" ? `<figure class="grammar-diagram timeline-diagram"><figcaption>Timeline: enter the middle of a future activity</figcaption><div class="timeline"><span>NOW</span><i></i><div><strong>8:00–10:00</strong><b>will be working</b></div><i></i><span>LATER</span></div><p>At 9:00, the activity has already started and has not finished. The future continuous places the viewpoint inside that activity.</p></figure>` : "";
+    const diagram = renderGuideDiagram(guide);
     return `<section class="deep-guide" id="detailed-guide"><span class="eyebrow">Detailed guide</span><h2>Understand the choice, not just the form</h2><div class="guide-intro">${guide.intro.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}</div>${diagram}
       <div class="guide-columns"><section><h3>Questions to ask yourself</h3><ol>${guide.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join("")}</ol></section><section><h3>Common mistakes</h3><ul>${guide.mistakes.map((mistake) => `<li>${escapeHtml(mistake)}</li>`).join("")}</ul></section></div>
       <div class="contrast-board"><h3>Compare the meaning</h3>${guide.contrasts.map(([example, meaning]) => `<article><code>${escapeHtml(example)}</code><p>${escapeHtml(meaning)}</p></article>`).join("")}</div></section>`;
@@ -103,7 +120,7 @@
     const items = exercises.filter((item) => item.topic === topic.id);
     const stats = statsFor(items);
     const voicePrompt = guides[topic.id].voicePrompt;
-    app.innerHTML = `<div class="lesson-page"><section class="lesson-hero topic-hero"><button class="back-link" data-action="home">← All topics</button><span class="eyebrow">Unit ${topic.number} · ${topic.subtitle}</span><h1>${topic.title}</h1><p>${topic.description}</p>
+    app.innerHTML = `<div class="lesson-page"><section class="lesson-hero topic-hero"><button class="back-link" data-action="home">← All topics</button><span class="eyebrow">Partial ${topic.partial} · Unit ${topic.number} · ${topic.subtitle}</span><h1>${topic.title}</h1><p>${topic.description}</p>
       <div class="topic-actions"><button class="primary" data-action="topic-practice" data-topic="${topic.id}">Practise all ${items.length}</button><button class="secondary" data-action="quick-test" data-topic="${topic.id}">Take the 8-question test</button></div>
       <div class="unit-progress"><span><strong>${stats.mastered}</strong> of ${items.length} mastered</span><span><strong>${stats.accuracy}%</strong> historical accuracy</span></div></section>
       <div class="lesson-layout"><aside class="lesson-toc"><span>In this unit</span>${topic.lesson.map((item, index) => `<a href="#rule-${index + 1}">${index + 1}. ${escapeHtml(item[0])}</a>`).join("")}<button class="primary" data-action="quick-test" data-topic="${topic.id}">Quick test →</button></aside>
@@ -119,9 +136,10 @@
     if (kind === "topic") { items = exercises.filter((item) => item.topic === topicId); title = `${topicById(topicId).title} practice`; }
     if (kind === "quick") { items = exercises.filter((item) => item.topic === topicId && item.quickTest); title = `${topicById(topicId).title} quick test`; }
     if (kind === "all") { items = exercises; title = "All-topic practice"; }
-    if (kind === "final") { items = exercises.filter((item) => item.finalTest); title = "Comprehensive final test"; }
+    if (kind === "partial1") { items = exercises.filter((item) => item.exam === 1); title = "Partial 1 exam"; }
+    if (kind === "partial2") { items = exercises.filter((item) => item.exam === 2); title = "Partial 2 exam"; }
     if (kind === "mistakes") { items = mistakes(); title = "Mistake review"; }
-    session = { kind, topicId, title, items: kind === "final" || kind === "quick" ? items : shuffle(items) };
+    session = { kind, topicId, title, items: kind === "partial1" || kind === "partial2" || kind === "quick" ? items : shuffle(items) };
     current = 0; selected = null; typedAnswer = ""; answered = false; sessionCorrect = 0; sessionDone = false;
     view = "session"; closeMenu(); render();
   }
@@ -136,7 +154,7 @@
     const topic = topicById(exercise.topic);
     const progressWidth = ((current + (answered ? 1 : 0)) / session.items.length) * 100;
     const correct = answered && isCorrectAnswer(exercise);
-    app.innerHTML = `<section class="practice-page"><div class="quiz-layout"><aside class="quiz-sidebar"><button class="back-link" data-action="exit-session">← Exit session</button><span class="eyebrow">${session.kind === "final" ? "All seven units" : escapeHtml(topic.title)}</span><h2>${escapeHtml(session.title)}</h2><div class="session-stat"><span>Progress</span><strong>${current + 1} / ${session.items.length}</strong></div><div class="progress-track"><span style="width:${progressWidth}%"></span></div><div class="session-stat"><span>Correct</span><strong>${sessionCorrect}</strong></div><p class="sidebar-tip"><strong>Strategy:</strong> identify the context before choosing the grammar form.</p></aside>
+    app.innerHTML = `<section class="practice-page"><div class="quiz-layout"><aside class="quiz-sidebar"><button class="back-link" data-action="exit-session">← Exit session</button><span class="eyebrow">${session.kind === "partial1" ? "All nine Partial 1 units" : session.kind === "partial2" ? "All seven Partial 2 units" : escapeHtml(topic.title)}</span><h2>${escapeHtml(session.title)}</h2><div class="session-stat"><span>Progress</span><strong>${current + 1} / ${session.items.length}</strong></div><div class="progress-track"><span style="width:${progressWidth}%"></span></div><div class="session-stat"><span>Correct</span><strong>${sessionCorrect}</strong></div><p class="sidebar-tip"><strong>Strategy:</strong> identify the context before choosing the grammar form.</p></aside>
       <article class="question-card ${exercise.passage ? "reading-question" : ""}"><div class="question-meta"><span class="topic-pill">${escapeHtml(topic.icon)} ${escapeHtml(topic.title)}</span><span>${escapeHtml(exercise.taskType || (exercise.type === "text" ? "Written answer" : "Multiple choice"))}</span></div>
       ${exercise.passage ? `<div class="reading-box"><span>Reading task</span><h3>${escapeHtml(exercise.passageTitle)}</h3><p>${escapeHtml(exercise.passage)}</p></div>` : ""}<p class="instruction">${escapeHtml(exercise.instruction)}</p><h2>${escapeHtml(exercise.prompt)}</h2>
       ${exercise.type === "choice" ? renderOptions(exercise) : `<div class="written-answer"><label for="written-input">Your answer</label><input id="written-input" type="text" autocomplete="off" spellcheck="false" value="${escapeHtml(typedAnswer)}" ${answered ? "disabled" : ""}><small>Capitalisation and final punctuation are ignored.</small></div>`}
@@ -174,7 +192,7 @@
   function updateChrome() {
     document.querySelector(".nav-count").textContent = mistakes().length;
     document.querySelectorAll("#main-nav [data-action]").forEach((button) => {
-      const active = (view === "home" && button.dataset.action === "home") || (view === "mistakes" && button.dataset.action === "mistakes") || (session?.kind === "final" && view === "session" && button.dataset.action === "final-test");
+      const active = (view === "home" && button.dataset.action === "home") || (view === "mistakes" && button.dataset.action === "mistakes") || (session?.kind === "partial1" && view === "session" && button.dataset.action === "partial-1-test") || (session?.kind === "partial2" && view === "session" && button.dataset.action === "partial-2-test");
       button.classList.toggle("active", active);
     });
   }
@@ -227,7 +245,8 @@
     if (action === "topic-practice") { startSession("topic", control.dataset.topic); return; }
     if (action === "quick-test") { startSession("quick", control.dataset.topic); return; }
     if (action === "all-practice") { startSession("all"); return; }
-    if (action === "final-test") { startSession("final"); return; }
+    if (action === "partial-1-test") { startSession("partial1"); return; }
+    if (action === "partial-2-test") { startSession("partial2"); return; }
     if (action === "mistakes") { navigate("mistakes"); return; }
     if (action === "review-mistakes") { startSession("mistakes"); return; }
     if (action === "exit-session") { session?.topicId ? navigate("topic", session.topicId) : navigate("home"); return; }
@@ -247,7 +266,8 @@
   const requestedTopic = params.get("topic");
   const requestedMode = params.get("mode");
   if (requestedTopic && topicById(requestedTopic)) { activeTopic = requestedTopic; view = "topic"; render(); }
-  else if (requestedMode === "final") startSession("final");
+  else if (requestedMode === "partial1") startSession("partial1");
+  else if (requestedMode === "partial2") startSession("partial2");
   else if (requestedMode === "all") startSession("all");
   else render();
 })();

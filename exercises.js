@@ -234,7 +234,7 @@ const banks = {
 };
 
 Object.entries(banks).forEach(([topic, items]) => items.forEach((item, index) => {
-  exercises.push({ ...item, id: `${topic}-${String(index + 1).padStart(2, "0")}`, taskType: item.passage ? "Reading comprehension" : item.type === "text" ? "Open cloze" : "Multiple choice", quickTest: [0, 1, 2, 3, 8, 9, 11, 12].includes(index), finalTest: [1, 3, 6, 9, 12].includes(index) });
+  exercises.push({ ...item, id: `${topic}-${String(index + 1).padStart(2, "0")}`, partial: 2, taskType: item.passage ? "Reading comprehension" : item.type === "text" ? "Open cloze" : "Multiple choice", quickTest: [0, 1, 2, 3, 8, 9, 11, 12].includes(index), finalTest: [1, 3, 6, 9, 12].includes(index), exam: [1, 3, 6, 9, 12].includes(index) ? 2 : null });
 }));
 
 const expansions = {
@@ -265,7 +265,13 @@ const expansions = {
 };
 
 Object.entries(expansions).forEach(([topic, items]) => items.forEach((item, index) => {
-  exercises.push({ ...item, id: `${topic}-extra-${String(index + 1).padStart(2, "0")}`, quickTest: false, finalTest: index === 0 || index === 8 });
+  exercises.push({ ...item, id: `${topic}-extra-${String(index + 1).padStart(2, "0")}`, partial: 2, quickTest: false, finalTest: index === 0 || index === 8, exam: index === 0 || index === 8 ? 2 : null });
 }));
 
-window.GrammarLabData = { topics, guides, exercises };
+topics.forEach((topic) => { topic.partial = 2; });
+const partial1 = window.Partial1Data || { topics: [], guides: {}, exercises: [] };
+window.GrammarLabData = {
+  topics: [...partial1.topics, ...topics],
+  guides: { ...partial1.guides, ...guides },
+  exercises: [...partial1.exercises, ...exercises]
+};

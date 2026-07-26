@@ -4,13 +4,13 @@ An English-only interactive B2 grammar course built with plain HTML, CSS and Jav
 
 ## Course structure
 
-- Seven grammar units
-- 118 original exercises
-- 24 exercises each for Future choices and Future continuous; 14 for every other unit
-- 30 written-answer tasks
-- 25 reading-based questions
+- Sixteen grammar units organised into two partials
+- 244 original exercises: 126 for Partial 1 and 118 for Partial 2
+- Extra emphasis on Mixed Tenses, Choosing the Correct Tense and B2 Story / Cloze Practice
+- 182 multiple-choice tasks and 62 written-answer tasks
+- 52 reading-based questions
 - An eight-question quick test for every unit
-- A balanced 39-question comprehensive final test
+- A balanced 45-question Partial 1 exam and a 39-question Partial 2 exam
 - Topic progress and mistake review saved in the browser
 - Copyable text prompts for optional voice practice
 

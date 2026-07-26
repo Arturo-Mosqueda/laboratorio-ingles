@@ -149,3 +149,59 @@ This file is updated throughout implementation so decisions and completed work r
 - Production returned HTTP 200.
 - A cache-busted production check confirmed the expanded exercise bank and topic-specific voice prompts are present in `exercises.js`.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
+
+## Partial 1 research and implementation — 2026-07-26
+
+### Requested organisation
+
+- New material is classified as `Partial 1`.
+- The existing seven units are classified as `Partial 2`.
+- Partial 1 covers present tenses, past tenses, passive voice, active/passive choice, mixed tenses, narrative tenses, time expressions, tense selection and B2 story/cloze practice.
+- The priority is a large number of mixed exercises requiring the learner to choose the tense or voice from context.
+
+### Grammar research
+
+- British Council explains present perfect as a past action or state connected to the present, and present perfect continuous as a focus on activity, duration, temporary repetition or visible recent evidence.
+  - https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2/present-perfect
+  - https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2/present-perfect-simple-continuous
+- British Council explains past perfect as `had + past participle`, used for time before a past reference point and for the earlier of two past actions.
+  - https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2/past-perfect
+- British Council explains passive voice as the appropriate tense of `be + past participle`, used to change focus when the agent is unknown, obvious, unimportant or deliberately omitted.
+  - https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2/passives
+  - https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/active-passive-voice
+- Cambridge B2 First Reading and Use of English uses multiple-choice cloze, open cloze and key-word transformations to test grammar in connected context.
+  - https://www.cambridgeenglish.org/exams-and-tests/qualifications/first/format/
+  - https://www.cambridgeenglish.org/latinamerica/Images/167791-b2-first-handbook.pdf
+
+### Copyright decision
+
+- New questions and stories will be original. Source rules and task formats inform coverage, but published exercise wording will not be copied verbatim.
+
+### Partial 1 progress
+
+- [x] Research and architecture documented before implementation.
+- [x] Nine Partial 1 units added.
+- [x] Existing units classified as Partial 2.
+- [x] Large mixed-tense exercise bank added.
+- [x] Partial 1 and Partial 2 exams separated.
+- [x] Topic-specific explanations and prompts added.
+- [x] Data, browser and responsive QA completed.
+- [ ] GitHub Pages deployed and verified.
+
+### Partial 1 implementation
+
+- Added 126 original questions: 12 each for Present Tenses, Past Tenses, Passive Voice, Active vs Passive Voice, Narrative Tenses and Time Expressions; 18 each for Mixed Tenses, Choosing the Correct Tense and B2 Story / Cloze Practice.
+- The complete course now contains 244 questions: 182 multiple-choice, 62 written-answer and 52 reading-based tasks.
+- Every one of the 16 units has an eight-question topic test and its own text-only speaking prompt.
+- Added a 45-question Partial 1 exam with five questions from each new unit.
+- Reclassified the existing balanced 39-question assessment as the Partial 2 exam.
+- Added two separate course-map sections and two exam entry points without changing the established visual system.
+- Added didactic decision diagrams for the present-tense system, past narrative timeline, passive construction and the time–aspect–voice selection method.
+
+### Partial 1 QA
+
+- JavaScript syntax checks passed for all three data/application files.
+- Data validation confirmed 16 topics, 244 unique question IDs, valid choice indexes, non-empty written answers and complete topic guides.
+- Browser QA confirmed all 16 cards, the Present Tenses lesson, an 8-question topic test, the 45-question Partial 1 exam and the 39-question Partial 2 exam.
+- Responsive QA at 390 px found no horizontal overflow.
+- No browser JavaScript errors were recorded.
