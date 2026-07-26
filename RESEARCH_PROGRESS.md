@@ -186,7 +186,7 @@ This file is updated throughout implementation so decisions and completed work r
 - [x] Partial 1 and Partial 2 exams separated.
 - [x] Topic-specific explanations and prompts added.
 - [x] Data, browser and responsive QA completed.
-- [ ] GitHub Pages deployed and verified.
+- [x] GitHub Pages deployed and verified.
 
 ### Partial 1 implementation
 
@@ -205,3 +205,11 @@ This file is updated throughout implementation so decisions and completed work r
 - Browser QA confirmed all 16 cards, the Present Tenses lesson, an 8-question topic test, the 45-question Partial 1 exam and the 39-question Partial 2 exam.
 - Responsive QA at 390 px found no horizontal overflow.
 - No browser JavaScript errors were recorded.
+
+### Partial 1 deployment
+
+- Implementation commit: `4c4cb2d`.
+- GitHub Pages workflow run `30223073887` completed successfully.
+- The public page and the cache-busted `partial1.js` resource both returned HTTP 200.
+- Production content checks found both `Present Tenses` and `Mixed Tenses` in the deployed question bank.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
