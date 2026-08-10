@@ -356,3 +356,28 @@ This file is updated throughout implementation so decisions and completed work r
 - GitHub Pages workflow run `31354783263` completed successfully.
 - Production returned HTTP 200; the deployed `curriculum.js` and `app.js` resources returned HTTP 200 and contain the C1 route, University dashboard and spaced-review logic.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
+
+## Personal English University — Phase 7 — 2026-08-09
+
+### Assessment design decision
+
+The level checkpoint previously measured only guided selected-response questions and linked production tasks after the result. The next route now makes the integrated assessment explicit before practice begins: Grammar + Use of English, Reading, Listening, Writing and Speaking each have a visible entry point, and the level portfolio project is linked as evidence.
+
+### Implementation progress
+
+- Added an integrated assessment view for B1+, B2, B2+ and C1.
+- Added level-filtered Reading and Listening sessions, preserving question feedback, progress records, mistake categories and spaced-review dates.
+- Added level-matched Writing and Speaking links using the existing production challenge interface.
+- Fixed production-route links so writing and speaking activity IDs are passed without malformed attributes.
+- Added responsive cards for the five assessment sections without changing the established design system.
+
+### Verification
+
+- Data validation: 155 University activities (83 quizzes and 72 challenges), 24 diagnostic questions (six per level), 21/23/18/21 level quiz questions, six production routes per level, 16 grammar topics and 244 grammar exercises.
+- Application syntax validation passed for `app.js` and `activity-expansion.js`.
+- Headless render smoke test produced five integrated assessment cards and opened a B1+ Reading section with the expected level-filtered session title.
+- Per-level coverage check found Reading 3–5, Listening 3–4, Writing 2–5 and Speaking 2–5 activities, so every level has all five assessment sections.
+
+### Pending publication
+
+The integrated route is ready to commit and publish. After the GitHub Pages workflow completes, the public URL will be checked again for HTTP 200 and the cache-busted JavaScript resources.

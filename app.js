@@ -16,6 +16,7 @@
   let activeSkill = null;
   let activeChallenge = null;
   let activeModule = null;
+  let activeExam = null;
   let progress = loadProgress();
   let meta = loadMeta();
   let session = null;
@@ -168,7 +169,23 @@
     const level = university.levels.find((item) => item.id === levelId);
     if (!level) return renderUniversity();
     const levelExam = university.levelExams?.find((exam) => exam.level === level.id);
-    app.innerHTML = `<section class="content-page level-page"><button class="back-link" data-action="university">← University map</button><div class="page-heading"><span class="eyebrow">Level ${escapeHtml(level.code)}</span><h1>${escapeHtml(level.title)}</h1><p>${escapeHtml(level.description)} ${escapeHtml(level.outcome)}</p></div><div class="module-list">${level.modules.map((module, index) => `<article class="module-card"><span class="module-number">${String(index + 1).padStart(2, "0")}</span><div><span class="eyebrow">${escapeHtml(module.skills.join(" · "))}</span><h2>${escapeHtml(module.title)}</h2><p>${escapeHtml(module.focus)}</p><div class="module-meta"><span>${module.lessons?.length || 0} lessons</span><span>${escapeHtml(module.assessment?.quiz || "Module checkpoint")}</span></div><div class="module-actions"><button class="primary" data-action="module" data-module="${module.id}">Open module →</button>${module.skills.map((skillId) => skillById(skillId) ? `<button class="secondary" data-action="skill" data-skill="${skillId}">${escapeHtml(skillById(skillId).title)} lab →</button>` : "").join("")}</div></div></article>`).join("")}</div><section class="exam-route"><div><span class="eyebrow">Milestone</span><h2>${escapeHtml(level.exam)}</h2><p>${levelExam?.questions.length || 0} guided questions plus a production route. Complete the modules, save evidence in your portfolio and return here when your skill scores are ready.</p></div><div class="exam-actions"><button class="primary" data-action="level-exam" data-level="${level.id}">Start level exam →</button><button class="secondary" data-action="diagnostic">Open diagnostic →</button></div></section></section>`;
+    app.innerHTML = `<section class="content-page level-page"><button class="back-link" data-action="university">← University map</button><div class="page-heading"><span class="eyebrow">Level ${escapeHtml(level.code)}</span><h1>${escapeHtml(level.title)}</h1><p>${escapeHtml(level.description)} ${escapeHtml(level.outcome)}</p></div><div class="module-list">${level.modules.map((module, index) => `<article class="module-card"><span class="module-number">${String(index + 1).padStart(2, "0")}</span><div><span class="eyebrow">${escapeHtml(module.skills.join(" · "))}</span><h2>${escapeHtml(module.title)}</h2><p>${escapeHtml(module.focus)}</p><div class="module-meta"><span>${module.lessons?.length || 0} lessons</span><span>${escapeHtml(module.assessment?.quiz || "Module checkpoint")}</span></div><div class="module-actions"><button class="primary" data-action="module" data-module="${module.id}">Open module →</button>${module.skills.map((skillId) => skillById(skillId) ? `<button class="secondary" data-action="skill" data-skill="${skillId}">${escapeHtml(skillById(skillId).title)} lab →</button>` : "").join("")}</div></div></article>`).join("")}</div><section class="exam-route"><div><span class="eyebrow">Milestone</span><h2>${escapeHtml(level.exam)}</h2><p>${levelExam?.questions.length || 0} guided questions plus a production route. Complete the modules, save evidence in your portfolio and return here when your skill scores are ready.</p></div><div class="exam-actions"><button class="primary" data-action="integrated-exam" data-level="${level.id}">Open integrated exam →</button><button class="secondary" data-action="level-exam" data-level="${level.id}">Quiz checkpoint</button><button class="secondary" data-action="diagnostic">Open diagnostic →</button></div></section></section>`;
+  }
+
+  function renderIntegratedExam(levelId) {
+    const level = university.levels.find((item) => item.id === levelId);
+    if (!level) return renderUniversity();
+    const levelItems = skillActivities.filter((item) => item.level === levelId);
+    const first = (skill, mode = "quiz") => levelItems.find((item) => item.skill === skill && item.mode === mode);
+    const project = university.projects.find((item) => item.level === levelId);
+    const sections = [
+      { label: "Grammar + Use of English", description: "Complete the guided checkpoint of tense, form, transformation, collocation and register decisions.", action: "level-exam", attrs: `data-level="${levelId}"`, text: "Start checkpoint →", count: `${university.levelExams.find((exam) => exam.level === levelId)?.questions.length || 0} questions` },
+      { label: "Reading", description: "Read for gist, detail, inference, tone and the relationship between evidence and claim.", action: "skill-level", attrs: `data-skill="reading" data-level="${levelId}"`, text: "Start reading section →", count: `${levelItems.filter((item) => item.skill === "reading").length} questions` },
+      { label: "Listening", description: "Listen for detail, attitude, implication and the speaker’s level of certainty.", action: "skill-level", attrs: `data-skill="listening" data-level="${levelId}"`, text: "Start listening section →", count: `${levelItems.filter((item) => item.skill === "listening").length} questions` },
+      { label: "Writing", description: "Produce a complete genre response, self-review it and reveal guidance only after drafting.", action: "challenge", attrs: `data-activity="${first("writing", "challenge")?.id || ""}"`, text: "Open writing task →", count: "production" },
+      { label: "Speaking", description: "Complete a timed interaction or simulation and respond to an unscripted follow-up.", action: "challenge", attrs: `data-activity="${first("speaking", "challenge")?.id || ""}"`, text: "Open speaking task →", count: "production" }
+    ];
+    app.innerHTML = `<section class="content-page integrated-exam-page"><button class="back-link" data-action="level" data-level="${level.id}">← Back to ${escapeHtml(level.code)} level</button><div class="page-heading"><span class="eyebrow">${escapeHtml(level.code)} integrated assessment</span><h1>${escapeHtml(level.exam)}</h1><p>Complete the sections in any order, then use your evidence and results to decide what to revisit. A language score is strongest when it includes both recognition and production.</p></div><div class="integrated-exam-grid">${sections.map((section) => `<article class="integrated-exam-card"><div class="activity-card-top"><span class="eyebrow">${escapeHtml(section.count)}</span><span>${escapeHtml(level.code)}</span></div><h2>${escapeHtml(section.label)}</h2><p>${escapeHtml(section.description)}</p><button class="primary" data-action="${section.action}" ${section.attrs}>${escapeHtml(section.text)}</button></article>`).join("")}</div>${project ? `<section class="exam-route"><div><span class="eyebrow">Portfolio evidence</span><h2>${escapeHtml(project.title)}</h2><p>${escapeHtml(project.description)}</p></div><button class="primary" data-action="challenge" data-activity="${project.id}">Open project brief →</button></section>` : ""}</section>`;
   }
 
   function renderModule(moduleId) {
@@ -262,7 +279,7 @@
       </article></div></div>`;
   }
 
-  function startSession(kind, topicId = null) {
+  function startSession(kind, topicId = null, levelId = null) {
     let items = [];
     let title = "Practice";
     let production = [];
@@ -272,11 +289,12 @@
     if (kind === "partial1") { items = exercises.filter((item) => item.exam === 1); title = "Partial 1 exam"; }
     if (kind === "partial2") { items = exercises.filter((item) => item.exam === 2); title = "Partial 2 exam"; }
     if (kind === "skill") { items = skillActivities.filter((item) => item.skill === topicId && item.mode === "quiz"); title = `${skillById(topicId)?.title || "Skill"} practice`; }
+    if (kind === "skill-level") { items = skillActivities.filter((item) => item.skill === topicId && item.level === levelId && item.mode === "quiz"); title = `${skillById(topicId)?.title || "Skill"} · ${university.levels.find((item) => item.id === levelId)?.code || levelId} section`; }
     if (kind === "diagnostic") { items = university.diagnostic || []; title = "B1+ → C1 diagnostic"; }
     if (kind === "review") { items = reviewDue(); title = "Spaced review queue"; }
     if (kind === "level-exam") { const exam = university.levelExams?.find((item) => item.level === topicId); items = exam?.questions || []; production = exam?.production || []; title = exam?.title || "Level exam"; }
     if (kind === "mistakes") { items = mistakes(); title = "Mistake review"; }
-    session = { kind, topicId, title, production, items: kind === "partial1" || kind === "partial2" || kind === "quick" || kind === "diagnostic" || kind === "level-exam" ? items : shuffle(items) };
+    session = { kind, topicId, levelId, title, production, items: kind === "partial1" || kind === "partial2" || kind === "quick" || kind === "diagnostic" || kind === "level-exam" || kind === "skill-level" ? items : shuffle(items) };
     current = 0; selected = null; typedAnswer = ""; answered = false; sessionCorrect = 0; sessionDone = false;
     view = "session"; closeMenu(); render();
   }
@@ -348,6 +366,7 @@
     if (view === "home") renderHome();
     else if (view === "university") renderUniversity();
     else if (view === "level") renderLevel(activeSkill);
+    else if (view === "integrated-exam") renderIntegratedExam(activeExam);
     else if (view === "module") renderModule(activeModule);
     else if (view === "skill") renderSkillPage(activeSkill);
     else if (view === "projects") renderProjects();
@@ -365,6 +384,7 @@
     if (nextView === "skill" || nextView === "level") activeSkill = topicId || activeSkill;
     if (nextView === "module") activeModule = topicId || activeModule;
     if (nextView === "challenge") activeChallenge = topicId || activeChallenge;
+    if (nextView === "integrated-exam") activeExam = topicId || activeExam;
     session = nextView === "session" ? session : null; closeMenu(); render();
     window.scrollTo({ top: 0, behavior: "smooth" }); app.focus({ preventScroll: true });
   }
@@ -403,8 +423,10 @@
     if (action === "university") { navigate("university"); return; }
     if (action === "skills") { navigate("university"); return; }
     if (action === "level") { navigate("level", control.dataset.level); return; }
+    if (action === "integrated-exam") { navigate("integrated-exam", control.dataset.level); return; }
     if (action === "module") { navigate("module", control.dataset.module); return; }
     if (action === "level-exam") { startSession("level-exam", control.dataset.level); return; }
+    if (action === "skill-level") { startSession("skill-level", control.dataset.skill, control.dataset.level); return; }
     if (action === "module-lesson") { const lesson = document.querySelector(`[data-lesson="${control.dataset.lesson}"]`); control.textContent = "Lesson completed ✓"; control.disabled = true; control.classList.add("lesson-complete"); progress[`lesson:${control.dataset.lesson}`] = { completedAt: new Date().toISOString() }; saveProgress(); return; }
     if (action === "skill") { navigate("skill", control.dataset.skill); return; }
     if (action === "projects") { navigate("projects"); return; }
@@ -426,7 +448,7 @@
     if (action === "partial-2-test") { startSession("partial2"); return; }
     if (action === "mistakes") { navigate("mistakes"); return; }
     if (action === "review-mistakes") { startSession("mistakes"); return; }
-    if (action === "exit-session") { if (session?.kind === "skill") navigate("skill", session.topicId); else if (session?.kind === "diagnostic") navigate("diagnostic"); else if (session?.kind === "level-exam") navigate("level", session.topicId); else session?.topicId ? navigate("topic", session.topicId) : navigate("home"); return; }
+    if (action === "exit-session") { if (session?.kind === "skill") navigate("skill", session.topicId); else if (session?.kind === "skill-level") navigate("integrated-exam", session.levelId); else if (session?.kind === "diagnostic") navigate("diagnostic"); else if (session?.kind === "level-exam") navigate("level", session.topicId); else session?.topicId ? navigate("topic", session.topicId) : navigate("home"); return; }
     if (action === "copy-prompt") { copyPrompt(control); return; }
     if (action === "submit" && !answered) {
       const exercise = session.items[current]; const correct = isCorrectAnswer(exercise);
@@ -440,7 +462,7 @@
       if (correct) sessionCorrect += 1; answered = true; saveProgress(); render(); return;
     }
     if (action === "next") { if (current === session.items.length - 1) sessionDone = true; else { current += 1; selected = null; typedAnswer = ""; answered = false; } render(); return; }
-    if (action === "repeat-session") { startSession(session.kind, session.topicId); return; }
+    if (action === "repeat-session") { startSession(session.kind, session.topicId, session.levelId); return; }
     if (action === "reset" && window.confirm("Delete all saved progress, favorites and study history?")) { progress = {}; meta = { favorites: [], results: [], streak: 0, lastStudyDate: null, levelEstimate: null }; saveProgress(); saveMeta(); render(); }
   });
 

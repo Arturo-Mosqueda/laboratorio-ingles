@@ -110,6 +110,27 @@ The new data model lives in `curriculum.js` and keeps levels, modules, skills, a
 
 Phase 1 includes 22 curriculum modules, nine skill labs, 23 starter activities, eight integrated projects and a six-question B1+→C1 diagnostic. Vocabulary, reading, Use of English and the receptive/production skills now have their own pages, guided quiz sessions and open-ended challenges. Listening and pronunciation challenges use the browser’s SpeechSynthesis API when available and retain a transcript/model fallback.
 
+## Personal English University expansion — Phase 7
+
+### Integrated level assessment route
+
+Each level now opens an integrated assessment page with five explicit sections:
+
+- Grammar + Use of English: the level quiz checkpoint.
+- Reading: level-filtered reading questions.
+- Listening: level-filtered listening questions.
+- Writing: a level-matched production brief with self-review and delayed model guidance.
+- Speaking: a level-matched interaction simulation.
+
+The page also links the level’s portfolio project. Reading and listening sections run through the same progress, feedback, mistake review and spaced-review system as the other guided activities. Exiting a level-filtered skill section returns to its integrated assessment page, while quiz results keep the production route visible.
+
+### Phase 7 verification targets
+
+- Four integrated assessment pages use the existing visual system and remain responsive.
+- Every level has at least three reading and listening questions plus two writing and speaking production routes.
+- The expanded data model remains at 155 University activities (83 quizzes, 72 challenges), 24 diagnostic questions and 244 grammar exercises.
+- The integrated assessment is an additional route; the original grammar topics, partial exams and text-only voice prompts remain intact.
+
 ### Phase 2 content depth
 
 - All 22 modules now expose five lessons: understand, notice, control, use independently and stretch the choice.
