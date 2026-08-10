@@ -84,6 +84,13 @@ This file is updated throughout implementation so decisions and completed work r
 - Production page title verified as `English Lab · B2 Grammar`.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
 
+### Use of English follow-up deployment
+
+- Follow-up commit: `8ef14b6`.
+- Added explicit `Sentence completion` and `Multiple-choice cloze` task types.
+- GitHub Pages workflow run `31358683819` completed successfully.
+- Production returned HTTP 200 and the cache-busted depth script contains both new task variants.
+
 ## Personal English University — Phase 5 — 2026-08-09
 
 ### Practice and assessment expansion
