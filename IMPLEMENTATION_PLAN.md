@@ -242,3 +242,38 @@ The page also links the level’s portfolio project. Reading and listening secti
 - GitHub Pages workflow run `31364230750` completed successfully.
 - The public index, `technical-english.js`, `course-lessons.js` and `app.js` returned HTTP 200 with the expected release markers.
 - Public Chrome rendering passed for Technical English, the C1 orbital-debris unit and the preserved Present Tenses route.
+
+## Personal English University expansion — Phase 13
+
+### Complete quality review and improvement plan
+
+The final review identified four structural weaknesses in an otherwise complete course:
+
+1. Skill pages could render as many as 711 activity cards and could start sessions containing hundreds of questions.
+2. A production challenge could be marked complete by saving only a reflection note.
+3. Writing models could be revealed before the learner produced and reviewed a draft.
+4. Guided accuracy and production completion were combined in a way that overstated productive evidence.
+
+### Improvements executed
+
+- Replaced unbounded skill libraries with level and practice-type filters, 24-card progressive disclosure and unfinished/error-first ordering.
+- Added smart bounded practice: 24 questions for a complete skill, 20 for a level or module, and 30 for review/mistake queues. Formal diagnostics, partial exams, module tests, progress tests, skill tests and level finals remain complete.
+- Added a production workspace to every challenge with a saved draft or outline, live word count, copy action, persisted checklist and reflection.
+- Added evidence gates. Writing requires at least 60% of the stated minimum word count (never fewer than 40 words) and every self-review criterion. Other challenges require a meaningful response or local recording and at least half of the checklist.
+- Local recordings continue to remain in the browser tab; only a local completion timestamp is saved as evidence.
+- Writing models are now disabled until draft and self-review evidence is complete.
+- Production completion is stored separately from quiz correctness and no longer adds an automatic correct answer.
+- Progress estimates now require guided evidence and production evidence whenever the skill contains both.
+- Recommendations now prioritise saved unfinished production before offering a new production task.
+- Normalised the five legacy writing challenges so all 358 writing challenges expose word limit, recommended structure, useful language, complete model, commentary and eight-part self-review.
+- Added a tablet navigation breakpoint and corrected medium-width overflow in the home, University summary and level assessment routes without changing the established visual character.
+
+### Phase 13 verification gates
+
+- Curriculum integrity audit: passed with 2,886 unique University activities, 244 core exercises, 358 complete writing challenges and zero invalid references or answers.
+- Learner-content scan: no Future Perfect, OpenAI runtime reference, placeholder text, Spanish instruction marker or UTF-8 replacement byte.
+- Static architecture audit: every local HTML asset exists and there are zero external runtime dependencies.
+- Activity interaction test: Vocabulary renders 24 of 711 cards, Production filtering renders 2 of 2 and the smart session starts at 1/24.
+- Writing interaction test: model and completion begin locked; a 90-word draft plus eight checks unlocks both; completion persists draft, checks and production evidence with `correct: 0`.
+- Browser route test: 57 routes passed with no runtime exception, missing heading, horizontal overflow or skill page above 24 activity cards.
+- Responsive test: home, University, Vocabulary and Writing passed at a true 390-pixel viewport with no horizontal overflow and a visible menu control.

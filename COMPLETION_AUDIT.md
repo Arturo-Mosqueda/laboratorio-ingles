@@ -46,7 +46,7 @@ All 2,886 University activity IDs are unique. Every activity has a valid level, 
 | Substantial varied Reading | Sixteen source records cover blog, narrative, interview, news, science, professional, policy, argumentative and academic genres; integrated texts contain detail, evidence, inference, vocabulary, tone/purpose and critical questions | Satisfied |
 | Listening beyond transcripts | Sixteen source records include dialogues, announcements, interviews, meetings, lectures, debates, technical briefings and podcasts; substantial integrated scripts have actual comprehension sets, playable SpeechSynthesis and transcript fallback | Satisfied |
 | Natural progression and regional delivery | SpeechSynthesis activities request suitable `en-US`, `en-GB`, `en-CA` or `en-AU` installed voices and level-adjusted rates. The interface states the selected regional hint and retains text fallback | Satisfied within browser capabilities |
-| Complete Writing Studio | Twenty-three genres cover every requested B1+, B2 and C1 family. All 358 writing challenges have a full model, commentary and eight self-review criteria; model content remains hidden until explicitly revealed | Satisfied |
+| Complete Writing Studio | Twenty-three genres cover every requested B1+, B2 and C1 family. All 358 writing challenges have a word limit, recommended structure, useful language, full model, commentary and eight self-review criteria; model content remains locked until a meaningful draft and complete self-review exist | Satisfied |
 | Speaking interaction, not prompt-only | The bank covers descriptions, stories, comparisons, problem-solving, discussion, debate, argument defence and all eleven requested real-life simulations. Challenges provide preparation, language, follow-ups, local timer, local recording and topic-specific voice-practice text | Satisfied |
 | No OpenAI integration | Voice-practice content is copyable text only. No API, SDK, authentication or external OpenAI service is connected | Satisfied |
 | Pronunciation route | The syllabus covers vowel/consonant contrasts, phonemes through minimal pairs, word/sentence stress, rhythm, connected speech, weak forms, linking, reductions and intonation, with listen/choose, shadowing, read-aloud and production work | Satisfied |
@@ -56,7 +56,7 @@ All 2,886 University activity IDs are unique. Every activity has a valid level, 
 | Academic, Professional and Technical English | Academic and Professional English have dedicated skill labs and module connections. Technical English has a dedicated five-lesson B2+ module, 32 progressive scenarios and 166 activities spanning programming, AI, engineering, robotics, science, aerospace, climate and finance | Satisfied |
 | Projects and long-term portfolio evidence | Eight projects, two per level, now contain preparation, milestones, deliverables, rubric/checklist, complete guidance, commentary, voice-practice text and reflection evidence | Satisfied |
 | Full evaluation ladder | Every module has a checkpoint; every level has eight skill tests, three progress tests, a 48-question final and an integrated Grammar/Use of English, Reading, Listening, Writing and Speaking route; the diagnostic has 64 balanced questions | Satisfied |
-| Progress dashboard and weakness detection | Dashboard records attempted/mastered work, accuracy and evidence-aware estimated level per skill, then recommends a next skill/level action | Satisfied |
+| Progress dashboard and weakness detection | Dashboard separates guided accuracy from completed production, uses both for evidence-aware level estimates and recommends unresolved errors or saved unfinished production | Satisfied |
 | Detailed error log | Failed attempts persist the prompt, learner answer, accepted answer, date, error type, topic, level, skill, attempt history, ease and next review | Satisfied |
 | Pattern recommendations | Specific messages identify recurring present/past aspect, passive focus, future choice, articles/determiners, collocation, word formation, register, reading, listening and pronunciation patterns | Satisfied |
 | Spaced repetition | Correct retrieval increases intervals and ease; difficult answers regress and return sooner. The queue includes grammar, Use of English, expressions, mistakes and vocabulary | Satisfied |
@@ -106,6 +106,17 @@ Sources:
 - Integrated-unit reading/listening/question/depth checks: passed for all eight units.
 - Chrome headless route rendering: passed for University, levels, Technical English, the technical module, lessons, Grammar Studio, integrated unit, project, writing and word-bank routes.
 - Visual review: desktop University, desktop integrated unit and narrow University views render with the existing design system.
+
+## Phase 13 quality gate
+
+- Activity libraries render no more than 24 activity cards at once and provide level/type filters plus progressive disclosure.
+- Ordinary skill, level and module study sessions are bounded and prioritise errors, due review and unseen work; formal assessments are unchanged.
+- Every production challenge now contains a saved workspace, evidence counter, persisted checklist, reflection and explicit completion action.
+- Saving work alone does not complete a challenge or increase correct-answer totals.
+- Writing model access requires draft and complete self-review evidence.
+- Browser interaction verified draft/checklist persistence and production completion with `correct: 0`.
+- Comprehensive Chrome smoke testing passed for 57 direct routes with zero runtime exceptions and a maximum of 24 rendered activity cards.
+- Tablet overflow corrections passed at 747 pixels; representative mobile routes passed at a true 390-pixel viewport with no horizontal overflow.
 
 ## Publication evidence
 

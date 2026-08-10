@@ -35,6 +35,9 @@
   let mediaRecorder = null;
   let recordingStream = null;
   let recordedChunks = [];
+  let skillLevelFilter = "all";
+  let skillModeFilter = "all";
+  let skillDisplayLimit = 24;
 
   const escapeHtml = (value = "") => String(value)
     .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
@@ -105,6 +108,11 @@
         const audio = document.querySelector("#local-recording-playback");
         if (audio && recordedChunks.length) { audio.src = URL.createObjectURL(new Blob(recordedChunks, { type: mediaRecorder.mimeType || "audio/webm" })); audio.hidden = false; }
         if (status) status.textContent = "Recording ready. Listen, choose one improvement and repeat the task.";
+        if (activeChallenge && recordedChunks.length) {
+          progress[`recording:${activeChallenge}`] = { recordedAt: new Date().toISOString(), localOnly: true };
+          saveProgress();
+          updateChallengeWorkspaceState();
+        }
         if (recordingStream) recordingStream.getTracks().forEach((track) => track.stop());
         recordingStream = null;
       });
@@ -189,17 +197,21 @@
   };
 
   function statsFor(items) {
+    const guided = items.filter((item) => item.mode !== "challenge");
+    const production = items.filter((item) => item.mode === "challenge");
     const attempted = items.filter((item) => progress[item.id]).length;
-    const mastered = items.filter((item) => progress[item.id]?.lastCorrect).length;
-    const totals = items.reduce((sum, item) => {
+    const mastered = items.filter((item) => progress[item.id]?.lastCorrect === true || progress[item.id]?.completedAt).length;
+    const guidedAttempted = guided.filter((item) => progress[item.id]?.attempts).length;
+    const productionCompleted = production.filter((item) => progress[item.id]?.completedAt).length;
+    const totals = guided.reduce((sum, item) => {
       const saved = progress[item.id];
       return { attempts: sum.attempts + (saved?.attempts || 0), correct: sum.correct + (saved?.correct || 0) };
     }, { attempts: 0, correct: 0 });
-    return { attempted, mastered, accuracy: percent(totals.correct, totals.attempts) };
+    return { attempted, mastered, guidedAttempted, guidedAvailable: guided.length, productionCompleted, productionAvailable: production.length, accuracy: percent(totals.correct, totals.attempts) };
   }
 
   function skillStats(skillId) {
-    return statsFor(skillId === "grammar" ? exercises : skillActivities.filter((item) => item.skill === skillId));
+    return statsFor(skillId === "grammar" ? [...exercises, ...skillActivities.filter((item) => item.skill === "grammar")] : skillActivities.filter((item) => item.skill === skillId));
   }
 
   function levelSkillStats(skillId, levelId) {
@@ -245,7 +257,10 @@
     university.levels.forEach((level) => {
       const items = skillId === "grammar" ? skillActivities.filter((item) => item.skill === "grammar" && item.level === level.id) : skillActivities.filter((item) => item.skill === skillId && item.level === level.id);
       const stats = statsFor(items);
-      if (stats.attempted >= 8 && stats.accuracy >= 72) estimate = level.code;
+      const guidedRequired = Math.min(6, stats.guidedAvailable);
+      const guidedReady = guidedRequired === 0 || (stats.guidedAttempted >= guidedRequired && stats.accuracy >= 72);
+      const productionReady = stats.productionAvailable === 0 || stats.productionCompleted >= 1;
+      if (guidedReady && productionReady && (stats.guidedAttempted || stats.productionCompleted)) estimate = level.code;
     });
     return estimate;
   }
@@ -265,17 +280,21 @@
 
   function renderProgressDashboard() {
     const topPatterns = errorPatterns().slice(0, 3);
+    const nextProduction = skillActivities.find((item) => item.mode === "challenge" && progress[`draft:${item.id}`]?.text && !progress[item.id]?.completedAt)
+      || skillActivities.find((item) => item.mode === "challenge" && !progress[item.id]?.completedAt);
     const skillRows = university.skills.map((skill) => {
       const overall = skillStats(skill.id);
       const levelCells = university.levels.map((level) => {
         const stats = levelSkillStats(skill.id, level.id);
         return `<span class="progress-level-cell"><small>${escapeHtml(level.code)}</small><strong>${stats.attempted}/${stats.mastered}</strong></span>`;
       }).join("");
-      return `<article class="skill-progress-row"><div class="skill-progress-name"><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><div><strong>${escapeHtml(skill.title)}</strong><small>${overall.attempted} attempted · ${overall.accuracy}% accuracy · estimate: ${escapeHtml(estimatedSkillLevel(skill.id))}</small></div></div><div class="progress-levels">${levelCells}</div><button class="card-link" data-action="skill" data-skill="${skill.id}">Open →</button></article>`;
+      return `<article class="skill-progress-row"><div class="skill-progress-name"><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><div><strong>${escapeHtml(skill.title)}</strong><small>${overall.guidedAttempted} guided · ${overall.productionCompleted} produced · ${overall.accuracy}% guided accuracy · estimate: ${escapeHtml(estimatedSkillLevel(skill.id))}</small></div></div><div class="progress-levels">${levelCells}</div><button class="card-link" data-action="skill" data-skill="${skill.id}">Open →</button></article>`;
     }).join("");
     const recommendation = topPatterns.length
       ? `<div class="recommendation-box"><span class="eyebrow">Recommended next step</span><h3>Review ${escapeHtml(topPatterns[0].item.title || topPatterns[0].item.prompt)}</h3><p>This pattern currently has ${topPatterns[0].count} unresolved question${topPatterns[0].count === 1 ? "" : "s"}: ${escapeHtml(topPatterns[0].errorType)}. Open the targeted review queue and then return to the linked skill lab.</p><button class="secondary" data-action="review-mistakes">Start targeted review →</button></div>`
-      : `<div class="recommendation-box"><span class="eyebrow">Recommended next step</span><h3>Build evidence across two skills</h3><p>Choose one guided skill lab and one production challenge. A short cycle of input, control, production and reflection creates more durable progress than a single score.</p><button class="secondary" data-action="projects">Open an integrated project →</button></div>`;
+      : nextProduction
+        ? `<div class="recommendation-box"><span class="eyebrow">Recommended next step</span><h3>${progress[`draft:${nextProduction.id}`]?.text ? "Finish your saved production" : "Add production evidence"}</h3><p>${escapeHtml(nextProduction.title || nextProduction.prompt)} will add reviewed writing, speaking or applied evidence to your guided results.</p><button class="secondary" data-action="challenge" data-activity="${nextProduction.id}">Open recommended challenge →</button></div>`
+        : `<div class="recommendation-box"><span class="eyebrow">Recommended next step</span><h3>Consolidate your portfolio</h3><p>You have completed the available production route. Revisit a guided skill with the lowest accuracy, then improve one saved draft or recording.</p><button class="secondary" data-action="projects">Review integrated projects →</button></div>`;
     return `<section class="progress-dashboard"><div class="section-heading"><div><span class="eyebrow">Progress by skill</span><h2>See where to focus next</h2></div><p>Each level cell shows attempted and mastered activities. Use the recommendation to turn error patterns into a concrete study action.</p></div><div class="skill-progress-list">${skillRows}</div>${recommendation}</section>`;
   }
 
@@ -358,7 +377,7 @@
   }
 
   function renderUniversity() {
-    const completed = allPracticeItems.filter((item) => progress[item.id]?.lastCorrect).length;
+    const completed = allPracticeItems.filter((item) => progress[item.id]?.lastCorrect === true || progress[item.id]?.completedAt).length;
     const due = reviewDue().length;
     app.innerHTML = `<section class="content-page university-page"><div class="university-layout">${renderCourseRail()}<div class="university-main"><div class="page-heading"><span class="eyebrow">Personal English University</span><h1>Build English for real life, study and work.</h1><p>Follow a progressive B1+ → B2 → B2+ → C1 route. Existing grammar remains available below, while the new skill labs turn knowledge into understanding and communication.</p></div>${renderCourseSearch()}<div class="university-summary"><div><strong>${completed}</strong><span>activities mastered</span></div><div><strong>${university.levels.length}</strong><span>levels</span></div><div><strong>${meta.streak || 0}</strong><span>day streak</span></div><div><strong>${escapeHtml(meta.levelEstimate || "Not measured")}</strong><span>starting estimate</span></div><button class="primary" data-action="diagnostic">Take the level diagnostic →</button></div><div class="review-strip"><div><span class="eyebrow">Study queue</span><h3>${due ? `${due} activities ready for review` : "Your review queue is clear"}</h3><p>Correct answers return after a longer interval; difficult answers come back sooner.</p></div><button class="secondary" data-action="review-due" ${due ? "" : "disabled"}>Open review queue →</button></div>${renderProgressDashboard()}${renderUniversityOverview()}<section class="curriculum-principles"><span class="eyebrow">Study method</span><h2>Learn → practise → produce → reflect</h2><div class="principle-grid"><div><strong>Input</strong><p>Read and listen to language in meaningful contexts.</p></div><div><strong>Control</strong><p>Use guided grammar and Use of English practice.</p></div><div><strong>Production</strong><p>Write, speak, pronounce and solve open-ended challenges.</p></div><div><strong>Reflection</strong><p>Review mistakes, record progress and return to difficult skills.</p></div></div></section></div></div></section>`;
   }
@@ -424,11 +443,36 @@
   function renderActivityCard(item) {
     const isChallenge = item.mode === "challenge";
     const level = university.levels.find((candidate) => candidate.id === item.level);
-    return `<article class="activity-card"><div class="activity-card-top"><span class="eyebrow">${escapeHtml(level?.code || item.level || "All levels")}</span><span>${escapeHtml(item.taskType || (isChallenge ? "Production challenge" : "Guided practice"))}</span><button class="favorite-button ${isFavorite(item.id) ? "is-favorite" : ""}" data-action="favorite" data-item="${item.id}" aria-label="${isFavorite(item.id) ? "Remove from favorites" : "Add to favorites"}">${isFavorite(item.id) ? "★" : "☆"}</button></div><h2>${escapeHtml(item.title || item.prompt)}</h2><p>${escapeHtml(item.prompt)}</p><div class="activity-card-footer">${isChallenge ? `<button class="secondary" data-action="challenge" data-activity="${item.id}">Open challenge →</button>` : `<span>Interactive question</span>`}</div></article>`;
+    const saved = progress[item.id];
+    const state = isChallenge
+      ? (saved?.completedAt ? "Production completed ✓" : progress[`draft:${item.id}`]?.text ? "Draft saved" : "Production challenge")
+      : (saved?.lastCorrect === true ? "Mastered ✓" : saved?.lastCorrect === false ? "Review recommended" : "Interactive question");
+    return `<article class="activity-card ${saved?.completedAt || saved?.lastCorrect === true ? "is-complete" : ""}"><div class="activity-card-top"><span class="eyebrow">${escapeHtml(level?.code || item.level || "All levels")}</span><span>${escapeHtml(item.taskType || (isChallenge ? "Production challenge" : "Guided practice"))}</span><button class="favorite-button ${isFavorite(item.id) ? "is-favorite" : ""}" data-action="favorite" data-item="${item.id}" aria-label="${isFavorite(item.id) ? "Remove from favorites" : "Add to favorites"}">${isFavorite(item.id) ? "★" : "☆"}</button></div><h2>${escapeHtml(item.title || item.prompt)}</h2><p>${escapeHtml(item.prompt)}</p><div class="activity-card-footer">${isChallenge ? `<button class="secondary" data-action="challenge" data-activity="${item.id}">Open challenge →</button>` : `<span>${escapeHtml(state)}</span>`}</div></article>`;
   }
 
-  function renderActivityGrid(items) {
-    return `<div class="skill-activity-grid">${items.map(renderActivityCard).join("")}</div>`;
+  function activityPriority(item) {
+    const saved = progress[item.id];
+    if (saved?.lastCorrect === false) return 0;
+    if (!saved && !progress[`draft:${item.id}`]) return 1;
+    if (item.mode === "challenge" && !saved?.completedAt) return 2;
+    return 3;
+  }
+
+  function renderActivityBrowser(items) {
+    const filtered = items
+      .filter((item) => skillLevelFilter === "all" || item.level === skillLevelFilter)
+      .filter((item) => skillModeFilter === "all" || item.mode === skillModeFilter)
+      .sort((a, b) => activityPriority(a) - activityPriority(b)
+        || university.levels.findIndex((level) => level.id === a.level) - university.levels.findIndex((level) => level.id === b.level)
+        || String(a.id).localeCompare(String(b.id)));
+    const visible = filtered.slice(0, skillDisplayLimit);
+    const levelFilters = [{ id: "all", code: "All levels" }, ...university.levels.filter((level) => items.some((item) => item.level === level.id))]
+      .map((level) => `<button class="filter-chip ${skillLevelFilter === level.id ? "is-active" : ""}" data-action="activity-filter-level" data-level="${level.id}">${escapeHtml(level.code)}</button>`).join("");
+    const modes = [{ id: "all", label: "All activities" }, { id: "quiz", label: "Guided" }, { id: "challenge", label: "Production" }]
+      .filter((mode) => mode.id === "all" || items.some((item) => item.mode === mode.id))
+      .map((mode) => `<button class="filter-chip ${skillModeFilter === mode.id ? "is-active" : ""}" data-action="activity-filter-mode" data-mode="${mode.id}">${escapeHtml(mode.label)}</button>`).join("");
+    const empty = `<div class="empty-state compact-empty"><span>↻</span><h2>No activities match these filters.</h2><p>Choose another level or activity type.</p></div>`;
+    return `<section class="activity-browser" aria-label="Activity library"><div class="activity-browser-toolbar"><div class="filter-group"><strong>Level</strong><div>${levelFilters}</div></div><div class="filter-group"><strong>Practice type</strong><div>${modes}</div></div></div><div class="activity-browser-summary"><span>Showing <strong>${visible.length}</strong> of <strong>${filtered.length}</strong> matching activities</span><span>Errors and unfinished work appear first.</span></div>${visible.length ? `<div class="skill-activity-grid">${visible.map(renderActivityCard).join("")}</div>` : empty}${visible.length < filtered.length ? `<div class="show-more-row"><button class="secondary" data-action="show-more-activities">Show ${Math.min(24, filtered.length - visible.length)} more</button></div>` : ""}</section>`;
   }
 
   function renderSkillPage(skillId) {
@@ -437,14 +481,14 @@
     if (skillId === "grammar") {
       const universityGrammar = skillActivities.filter((item) => item.skill === "grammar");
       const universityGrammarQuizzes = universityGrammar.filter((item) => item.mode === "quiz");
-      app.innerHTML = `<section class="content-page skill-page"><button class="back-link" data-action="university">← University map</button><div class="skill-page-hero"><div><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span class="eyebrow">Core + University grammar</span><h1>Grammar</h1><p>${escapeHtml(skill.description)} The original 16-topic course remains the central grammar route, with detailed lessons, diagrams, quick tests and two partial exams. The University route adds ${universityGrammarQuizzes.length} levelled form, meaning, register and contrast questions.</p></div><div class="skill-page-actions"><button class="primary" data-action="all-practice">Practise all ${exercises.length} core questions →</button><button class="secondary" data-action="skill-practice" data-skill="grammar">Practise University grammar →</button></div></div><section class="grammar-core-route"><div class="section-heading"><div><span class="eyebrow">Core route</span><h2>Choose a grammar topic</h2></div><p>Open any unit for its explanation, examples, practice bank, mini-test and voice prompt.</p></div><div class="topic-grid">${topics.map((topic, index) => renderTopicCard(topic, index)).join("")}</div></section><section class="university-activity-route"><div class="section-heading"><div><span class="eyebrow">Levelled extension</span><h2>Grammar in the University syllabus</h2></div><p>Use these questions after a lesson to retrieve forms, compare viewpoints and make register-sensitive choices.</p></div>${renderActivityGrid(universityGrammar)}</section>${renderCatalogExtras("grammar")}</section>`;
+      app.innerHTML = `<section class="content-page skill-page"><button class="back-link" data-action="university">← University map</button><div class="skill-page-hero"><div><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span class="eyebrow">Core + University grammar</span><h1>Grammar</h1><p>${escapeHtml(skill.description)} The original 16-topic course remains the central grammar route, with detailed lessons, diagrams, quick tests and two partial exams. The University route adds ${universityGrammarQuizzes.length} levelled form, meaning, register and contrast questions.</p></div><div class="skill-page-actions"><button class="primary" data-action="all-practice">Practise all ${exercises.length} core questions →</button><button class="secondary" data-action="skill-practice" data-skill="grammar">Start a smart ${Math.min(24, universityGrammarQuizzes.length)}-question session →</button></div></div><section class="grammar-core-route"><div class="section-heading"><div><span class="eyebrow">Core route</span><h2>Choose a grammar topic</h2></div><p>Open any unit for its explanation, examples, practice bank, mini-test and voice prompt.</p></div><div class="topic-grid">${topics.map((topic, index) => renderTopicCard(topic, index)).join("")}</div></section><section class="university-activity-route"><div class="section-heading"><div><span class="eyebrow">Levelled extension</span><h2>Grammar in the University syllabus</h2></div><p>Filter the library by level or activity type. Difficult and unfinished work is shown first.</p></div>${renderActivityBrowser(universityGrammar)}</section>${renderCatalogExtras("grammar")}</section>`;
       return;
     }
     const items = skillActivities.filter((item) => item.skill === skillId);
     const quizItems = items.filter((item) => item.mode === "quiz");
     const challengeItems = items.filter((item) => item.mode === "challenge");
     const levelButtons = university.levels.filter((level) => items.some((item) => item.level === level.id && item.mode === "quiz")).map((level) => `<button class="secondary" data-action="skill-level" data-skill="${skill.id}" data-level="${level.id}">${escapeHtml(level.code)} section</button>`).join("");
-    app.innerHTML = `<section class="content-page skill-page"><button class="back-link" data-action="university">← University map</button><div class="skill-page-hero"><div><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span class="eyebrow">Skill lab</span><h1>${escapeHtml(skill.title)}</h1><p>${escapeHtml(skill.description)}</p></div>${quizItems.length ? `<div class="skill-page-actions"><button class="primary" data-action="skill-practice" data-skill="${skill.id}">Start ${quizItems.length}-question practice →</button>${levelButtons}</div>` : ""}</div>${renderActivityGrid(items)}${renderCatalogExtras(skillId)}${challengeItems.length ? `<div class="callout"><strong>Production matters.</strong><p>Complete the open challenges after the guided questions. Save a note or recording idea so the skill becomes usable, not merely recognisable.</p></div>` : ""}</section>`;
+    app.innerHTML = `<section class="content-page skill-page"><button class="back-link" data-action="university">← University map</button><div class="skill-page-hero"><div><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span class="eyebrow">Skill lab</span><h1>${escapeHtml(skill.title)}</h1><p>${escapeHtml(skill.description)}</p></div>${quizItems.length ? `<div class="skill-page-actions"><button class="primary" data-action="skill-practice" data-skill="${skill.id}">Start a smart ${Math.min(24, quizItems.length)}-question session →</button>${levelButtons}</div>` : ""}</div>${renderActivityBrowser(items)}${renderCatalogExtras(skillId)}${challengeItems.length ? `<div class="callout"><strong>Production matters.</strong><p>Complete open challenges after guided practice. Save a real draft, outline or recording, review it against the checklist and then mark the challenge complete.</p></div>` : ""}</section>`;
   }
 
   function renderIntegratedUnits() {
@@ -494,24 +538,96 @@
     app.innerHTML = `<section class="content-page grammar-studio">${renderBreadcrumbs([{ label: "University", action: "university" }, { label: "Grammar", action: "skill", id: "grammar", key: "skill" }, { label: item.title }])}<header class="grammar-studio-hero"><div><span class="eyebrow">${escapeHtml(level?.code || item.level)} Grammar Studio</span><h1>${escapeHtml(item.title)}</h1><p>${escapeHtml(studio.overview)}</p></div><div class="grammar-form-card"><span>Core pattern</span><code>${escapeHtml(studio.form)}</code></div></header><figure class="grammar-choice-flow"><figcaption>Meaning-to-form decision</figcaption><div><span>1</span><strong>Context</strong><p>Identify the time, relationship, audience and purpose.</p></div><div><span>2</span><strong>Meaning</strong><p>${escapeHtml(item.focus)}</p></div><div><span>3</span><strong>Form</strong><p>${escapeHtml(item.form)}</p></div><div><span>4</span><strong>Check</strong><p>Compare the alternative, then verify agreement, order and register.</p></div></figure><div class="grammar-studio-grid"><article><span class="eyebrow">Detailed explanation</span><h2>Why speakers choose it</h2><p>${escapeHtml(studio.decision)}</p><h3>Questions to ask</h3><ol>${studio.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join("")}</ol></article><article><span class="eyebrow">Examples and contrast</span><h2>Compare the viewpoint</h2><div class="grammar-model"><strong>${escapeHtml(item.title)}</strong><code>${escapeHtml(studio.model)}</code></div><div class="grammar-model comparison"><strong>Compare: ${escapeHtml(studio.comparisonTitle)}</strong><code>${escapeHtml(studio.comparison)}</code></div><p>The comparison is not automatically interchangeable. Explain which context and viewpoint would make each model natural.</p></article></div><section class="grammar-guided-route"><div><span class="eyebrow">Guided practice</span><h2>Retrieve form, meaning and contrast</h2><p>${practice.length} focused questions are connected to this studio. The mini-test gives feedback and adds difficult decisions to spaced review.</p></div><button class="primary" data-action="grammar-mini-test" data-grammar="${item.id}">Start ${practice.length}-question mini-test →</button></section><section class="grammar-independent"><div><span class="eyebrow">Independent B2/C1 challenge</span><h2>Make the grammar necessary</h2><p>${escapeHtml(studio.challenge)}</p><ul><li>Underline the context clue that makes the choice natural.</li><li>Explain the meaning difference from one nearby alternative.</li><li>Review form, word order, agreement and register.</li></ul></div><div><label class="eyebrow" for="grammar-note">Your examples and reflection</label><textarea id="grammar-note" placeholder="Write your three-sentence context and explain the choice.">${escapeHtml(saved)}</textarea><button class="primary" data-action="save-grammar-note" data-grammar="${item.id}">Save Grammar Studio work</button><span class="copy-status" aria-live="polite"></span></div></section></section>`;
   }
 
+  function challengeItemById(activityId) {
+    return activityById(activityId) || university.projects.find((project) => project.id === activityId);
+  }
+
+  function countWords(value = "") {
+    return String(value).trim() ? String(value).trim().split(/\s+/).length : 0;
+  }
+
+  function minimumWritingWords(wordLimit) {
+    const values = String(wordLimit || "").match(/\d+/g)?.map(Number) || [];
+    return Math.max(40, Math.ceil((values[0] || 70) * 0.6));
+  }
+
+  function isWritingChallenge(item) {
+    return item?.skill === "writing" || Boolean(item?.wordLimit);
+  }
+
+  function isOralChallenge(item) {
+    return ["speaking", "fluency", "pronunciation"].includes(item?.skill) || Boolean(item?.voicePrompt);
+  }
+
+  function challengeEvidenceState(item, readPage = false) {
+    const criteria = item.selfReviewCriteria || item.checklist || ["Grammar", "Vocabulary", "Coherence", "Cohesion", "Organisation", "Register", "Accuracy", "Range"];
+    const draft = readPage ? (document.querySelector("#challenge-draft")?.value || "") : (progress[`draft:${item.id}`]?.text || "");
+    const checked = readPage
+      ? [...document.querySelectorAll("[data-review-index]:checked")].map((input) => Number(input.dataset.reviewIndex))
+      : (progress[`review:${item.id}`]?.checked || []);
+    const words = countWords(draft);
+    const oral = isOralChallenge(item);
+    const writing = isWritingChallenge(item);
+    const recorded = Boolean(progress[`recording:${item.id}`]?.recordedAt);
+    const minimumWords = writing ? minimumWritingWords(item.wordLimit) : oral ? 10 : 20;
+    const requiredChecks = writing ? criteria.length : Math.max(1, Math.ceil(criteria.length / 2));
+    const evidenceReady = words >= minimumWords || (oral && recorded);
+    return { draft, checked, words, minimumWords, requiredChecks, criteriaCount: criteria.length, recorded, ready: Boolean(progress[item.id]?.completedAt) || (evidenceReady && checked.length >= requiredChecks) };
+  }
+
+  function persistChallengeWorkspace(item) {
+    const state = challengeEvidenceState(item, true);
+    const note = document.querySelector("#challenge-note")?.value.trim() || "";
+    const now = new Date().toISOString();
+    progress[`draft:${item.id}`] = { text: state.draft, wordCount: state.words, updatedAt: now };
+    progress[`review:${item.id}`] = { checked: state.checked, updatedAt: now };
+    progress[`note:${item.id}`] = { text: note, updatedAt: now };
+    recordStudyDay();
+    saveProgress();
+    return state;
+  }
+
+  function updateChallengeWorkspaceState() {
+    const item = challengeItemById(activeChallenge);
+    if (!item || !document.querySelector("#challenge-draft")) return;
+    const state = challengeEvidenceState(item, true);
+    const counter = document.querySelector("#challenge-word-count");
+    const evidence = document.querySelector("#challenge-evidence-status");
+    const complete = document.querySelector('[data-action="complete-challenge"]');
+    const model = document.querySelector('[data-action="toggle-model"]');
+    if (counter) counter.textContent = `${state.words} words`;
+    if (evidence) evidence.textContent = `${state.checked.length}/${state.criteriaCount} review checks · target: ${state.minimumWords}+ words${isOralChallenge(item) ? " or a local recording" : ""}`;
+    if (complete && !progress[item.id]?.completedAt) complete.disabled = !state.ready;
+    if (model && isWritingChallenge(item)) {
+      model.disabled = !state.ready;
+      model.textContent = state.ready ? "Show model answer after self-review" : "Complete your draft and self-review to unlock the model";
+    }
+  }
+
   function renderChallenge(activityId) {
-    const item = activityById(activityId) || university.projects.find((project) => project.id === activityId);
+    const item = challengeItemById(activityId);
     if (!item) return renderUniversity();
-    const saved = progress[`note:${item.id}`]?.text || "";
+    const savedNote = progress[`note:${item.id}`]?.text || "";
+    const savedDraft = progress[`draft:${item.id}`]?.text || "";
+    const savedReview = progress[`review:${item.id}`]?.checked || [];
     const skill = item.skill ? skillById(item.skill) : null;
     const speechText = item.speechText || item.transcript || item.voicePrompt || item.prompt || item.description || "English Lab practice";
-    const briefMeta = item.wordLimit ? `<div class="writing-brief-meta"><div><strong>Word limit</strong><span>${escapeHtml(item.wordLimit)}</span></div><div><strong>Structure</strong><span>${item.recommendedStructure.map(escapeHtml).join(" → ")}</span></div><div><strong>Useful language</strong><span>${item.usefulLanguage.map(escapeHtml).join(" · ")}</span></div></div>` : "";
+    const briefMeta = item.wordLimit ? `<div class="writing-brief-meta"><div><strong>Word limit</strong><span>${escapeHtml(item.wordLimit)}</span></div><div><strong>Structure</strong><span>${(item.recommendedStructure || []).map(escapeHtml).join(" → ")}</span></div><div><strong>Useful language</strong><span>${(item.usefulLanguage || []).map(escapeHtml).join(" · ")}</span></div></div>` : "";
     const projectMeta = item.milestones?.length ? `<section class="project-blueprint"><div><span class="eyebrow">Project milestones</span><ol>${item.milestones.map((milestone) => `<li>${escapeHtml(milestone)}</li>`).join("")}</ol></div><div><span class="eyebrow">Required deliverables</span><ul>${(item.deliverables || []).map((deliverable) => `<li>${escapeHtml(deliverable)}</li>`).join("")}</ul></div><div><span class="eyebrow">Integrated evidence</span><p>${(item.skills || []).map((skillId) => escapeHtml(skillById(skillId)?.title || skillId)).join(" · ")}</p></div></section>` : "";
     const modelGuidance = item.modelAnswer || item.sample || "Finish your own work before comparing it with a model or asking for feedback.";
     const modelParagraphs = String(modelGuidance).split(/\n\n+/).map((paragraph) => `<p>${escapeHtml(paragraph).replaceAll("\n", "<br>")}</p>`).join("");
     const modelCommentary = item.modelCommentary ? `<aside class="model-commentary"><strong>Why this model works</strong><p>${escapeHtml(item.modelCommentary)}</p></aside>` : "";
     const reviewCriteria = item.selfReviewCriteria || item.checklist || ["Grammar", "Vocabulary", "Coherence", "Cohesion", "Organisation", "Register", "Accuracy", "Range"];
     const challengeComplete = Boolean(progress[item.id]?.completedAt);
+    const state = challengeEvidenceState(item);
+    const writing = isWritingChallenge(item);
+    const oral = isOralChallenge(item);
     const voiceCard = item.voicePrompt ? `<section class="voice-card challenge-voice-card"><div class="voice-icon" aria-hidden="true">◉</div><div><span class="eyebrow">Optional voice practice</span><h2>Practise this challenge aloud</h2><p>Copy this text into a voice conversation after completing your own attempt.</p><pre>${escapeHtml(item.voicePrompt)}</pre><button class="secondary" data-action="copy-prompt" data-prompt="${escapeHtml(item.voicePrompt)}">Copy voice prompt</button><span class="copy-status" aria-live="polite"></span></div></section>` : "";
-    const oralSkill = ["speaking", "fluency", "pronunciation"].includes(item.skill) || Boolean(item.voicePrompt);
     const timerSeconds = item.timerSeconds || (item.level === "c1" ? 180 : item.level === "b2-plus" ? 120 : item.level === "b2" ? 90 : 60);
-    const oralTools = oralSkill ? `<section class="oral-tools"><div><span class="eyebrow">Local speaking tools</span><h2>Time, record, listen, repeat</h2><p>The recording stays in this browser tab and is never uploaded by English Lab.</p></div><div class="oral-tool-controls"><div class="timer-control"><strong id="speaking-timer">${String(Math.floor(timerSeconds / 60)).padStart(2, "0")}:${String(timerSeconds % 60).padStart(2, "0")}</strong><button class="secondary" data-action="start-timer" data-seconds="${timerSeconds}">Start timer</button></div><div class="recording-control"><button class="primary" data-action="start-recording">Record locally</button><button class="secondary" data-action="stop-recording" disabled>Stop</button><audio id="local-recording-playback" controls hidden></audio><span id="recording-status" aria-live="polite">Microphone access is requested only when you press Record.</span></div></div></section>` : "";
-    app.innerHTML = `<section class="content-page challenge-page"><button class="back-link" data-action="${skill ? "skill" : "projects"}" data-skill="${skill?.id || ""}">← Back to ${skill ? escapeHtml(skill.title) : "projects"}</button><div class="page-heading"><span class="eyebrow">${escapeHtml(item.level || "Integrated project")}</span><h1>${escapeHtml(item.title || "Project brief")}</h1><p>${escapeHtml(item.prompt || item.description)}</p><button class="favorite-button challenge-favorite ${isFavorite(item.id) ? "is-favorite" : ""}" data-action="favorite" data-item="${item.id}">${isFavorite(item.id) ? "★ Saved" : "☆ Save challenge"}</button></div>${briefMeta}${projectMeta}${oralTools}<div class="challenge-layout"><article class="challenge-panel"><span class="eyebrow">Preparation</span><ol>${(item.preparation || ["Read the prompt carefully.", "Plan before producing your answer.", "Review your work after completing it."]).map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>${item.transcript ? `<div class="transcript-box"><span class="eyebrow">Listening text</span><p>${escapeHtml(item.transcript)}</p></div>` : ""}<div class="challenge-actions"><button class="secondary" data-action="speak" data-speech="${escapeHtml(speechText)}">▶ Play model text</button>${item.transcript ? `<button class="text-button" data-action="toggle-transcript">Show / hide transcript</button>` : ""}</div></article><aside class="challenge-panel checklist-panel"><span class="eyebrow">Self-review checklist</span><ul>${reviewCriteria.map((check) => `<li><label><input type="checkbox"> ${escapeHtml(check)}</label>`).join("")}</ul><label class="eyebrow" for="challenge-note">Reflection note</label><textarea id="challenge-note" placeholder="What did you do well? What will you improve next time?">${escapeHtml(saved)}</textarea><button class="primary" data-action="save-note" data-activity="${item.id}">Save reflection</button><span class="copy-status" aria-live="polite"></span></aside></div><div class="model-note"><button class="text-button" data-action="toggle-model">Show model answer after self-review</button><div class="model-guidance is-hidden"><span class="eyebrow">Model answer / example</span><div class="model-answer-text">${modelParagraphs}</div>${modelCommentary}</div></div>${voiceCard}</section>`;
+    const oralTools = oral ? `<section class="oral-tools"><div><span class="eyebrow">Local speaking tools</span><h2>Time, record, listen, repeat</h2><p>The recording stays in this browser tab and is never uploaded by English Lab. Only a completion timestamp is saved.</p></div><div class="oral-tool-controls"><div class="timer-control"><strong id="speaking-timer">${String(Math.floor(timerSeconds / 60)).padStart(2, "0")}:${String(timerSeconds % 60).padStart(2, "0")}</strong><button class="secondary" data-action="start-timer" data-seconds="${timerSeconds}">Start timer</button></div><div class="recording-control"><button class="primary" data-action="start-recording">Record locally</button><button class="secondary" data-action="stop-recording" disabled>Stop</button><audio id="local-recording-playback" controls hidden></audio><span id="recording-status" aria-live="polite">${state.recorded ? "A local recording attempt was completed previously." : "Microphone access is requested only when you press Record."}</span></div></div></section>` : "";
+    const draftLabel = writing ? "Your draft" : oral ? "Speaking outline or transcript" : "Your response and evidence notes";
+    const modelLocked = writing && !state.ready;
+    app.innerHTML = `<section class="content-page challenge-page"><button class="back-link" data-action="${skill ? "skill" : "projects"}" data-skill="${skill?.id || ""}">← Back to ${skill ? escapeHtml(skill.title) : "projects"}</button><div class="page-heading"><span class="eyebrow">${escapeHtml(item.level || "Integrated project")}${challengeComplete ? " · Completed ✓" : ""}</span><h1>${escapeHtml(item.title || "Project brief")}</h1><p>${escapeHtml(item.prompt || item.description)}</p><button class="favorite-button challenge-favorite ${isFavorite(item.id) ? "is-favorite" : ""}" data-action="favorite" data-item="${item.id}">${isFavorite(item.id) ? "★ Saved" : "☆ Save challenge"}</button></div>${briefMeta}${projectMeta}${oralTools}<section class="production-workspace"><div class="workspace-heading"><div><span class="eyebrow">Production workspace</span><h2>${draftLabel}</h2><p>Produce before comparing. Your work is stored only in this browser.</p></div><div class="workspace-metrics"><strong id="challenge-word-count">${countWords(savedDraft)} words</strong><span id="challenge-evidence-status">${state.checked.length}/${state.criteriaCount} review checks · target: ${state.minimumWords}+ words${oral ? " or a local recording" : ""}</span></div></div><label class="sr-only" for="challenge-draft">${draftLabel}</label><textarea id="challenge-draft" placeholder="Write your first attempt, speaking outline, transcript or evidence here.">${escapeHtml(savedDraft)}</textarea><div class="workspace-actions"><button class="secondary" data-action="save-challenge-work" data-activity="${item.id}">Save work</button><button class="text-button" data-action="copy-draft">Copy draft</button><span class="copy-status" id="workspace-status" aria-live="polite"></span></div></section><div class="challenge-layout"><article class="challenge-panel"><span class="eyebrow">Preparation</span><ol>${(item.preparation || ["Read the prompt carefully.", "Plan before producing your answer.", "Review your work after completing it."]).map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>${item.transcript ? `<div class="transcript-box"><span class="eyebrow">Listening text</span><p>${escapeHtml(item.transcript)}</p></div>` : ""}<div class="challenge-actions"><button class="secondary" data-action="speak" data-speech="${escapeHtml(speechText)}">▶ Play model text</button>${item.transcript ? `<button class="text-button" data-action="toggle-transcript">Show / hide transcript</button>` : ""}</div></article><aside class="challenge-panel checklist-panel"><span class="eyebrow">Self-review checklist</span><ul>${reviewCriteria.map((check, index) => `<li><label><input type="checkbox" data-review-index="${index}" ${savedReview.includes(index) ? "checked" : ""}> ${escapeHtml(check)}</label></li>`).join("")}</ul><label class="eyebrow" for="challenge-note">Reflection note</label><textarea id="challenge-note" placeholder="What did you do well? What will you improve next time?">${escapeHtml(savedNote)}</textarea><button class="${challengeComplete ? "secondary" : "primary"}" data-action="complete-challenge" data-activity="${item.id}" ${challengeComplete || !state.ready ? "disabled" : ""}>${challengeComplete ? "Challenge completed ✓" : "Complete challenge"}</button><span class="copy-status" id="completion-status" aria-live="polite"></span></aside></div><div class="model-note"><button class="text-button" data-action="toggle-model" ${modelLocked ? "disabled" : ""}>${modelLocked ? "Complete your draft and self-review to unlock the model" : "Show model answer after self-review"}</button><div class="model-guidance is-hidden"><span class="eyebrow">Model answer / example</span><div class="model-answer-text">${modelParagraphs}</div>${modelCommentary}</div></div>${voiceCard}</section>`;
   }
 
   function renderDiagnostic() {
@@ -559,7 +675,22 @@
       </article></div></div>`;
   }
 
+  function smartPracticeSet(items, limit = 24) {
+    const now = new Date().toISOString();
+    const groups = [[], [], [], []];
+    items.forEach((item) => {
+      const saved = progress[item.id];
+      if (saved?.lastCorrect === false) groups[0].push(item);
+      else if (saved && (!saved.nextReview || saved.nextReview <= now)) groups[1].push(item);
+      else if (!saved) groups[2].push(item);
+      else groups[3].push(item);
+    });
+    return groups.flatMap((group) => shuffle(group)).slice(0, Math.min(limit, items.length));
+  }
+
   function startSession(kind, topicId = null, levelId = null) {
+    const activeViewId = view === "topic" ? activeTopic : view === "skill" || view === "level" ? activeSkill : view === "module" ? activeModule : view === "lesson" ? activeLesson : view === "grammar-studio" ? activeGrammar : view === "integrated-unit" ? activeIntegratedUnit : view === "integrated-exam" ? activeExam : null;
+    const returnTarget = view === "session" && session?.returnTarget ? session.returnTarget : { view, id: activeViewId };
     let items = [];
     let title = "Practice";
     let production = [];
@@ -568,9 +699,9 @@
     if (kind === "all") { items = exercises; title = "All-topic practice"; }
     if (kind === "partial1") { items = exercises.filter((item) => item.exam === 1); title = "Partial 1 exam"; }
     if (kind === "partial2") { items = exercises.filter((item) => item.exam === 2); title = "Partial 2 exam"; }
-    if (kind === "skill") { items = skillActivities.filter((item) => item.skill === topicId && item.mode === "quiz"); title = `${skillById(topicId)?.title || "Skill"} practice`; }
-    if (kind === "skill-level") { items = skillActivities.filter((item) => item.skill === topicId && item.level === levelId && item.mode === "quiz"); title = `${skillById(topicId)?.title || "Skill"} · ${university.levels.find((item) => item.id === levelId)?.code || levelId} section`; }
-    if (kind === "module") { items = skillActivities.filter((item) => item.moduleId === levelId && item.skill === topicId && item.mode === "quiz"); title = `${skillById(topicId)?.title || "Skill"} · module practice`; }
+    if (kind === "skill") { items = smartPracticeSet(skillActivities.filter((item) => item.skill === topicId && item.mode === "quiz"), 24); title = `${skillById(topicId)?.title || "Skill"} · smart practice`; }
+    if (kind === "skill-level") { items = smartPracticeSet(skillActivities.filter((item) => item.skill === topicId && item.level === levelId && item.mode === "quiz"), 20); title = `${skillById(topicId)?.title || "Skill"} · ${university.levels.find((item) => item.id === levelId)?.code || levelId} section`; }
+    if (kind === "module") { items = smartPracticeSet(skillActivities.filter((item) => item.moduleId === levelId && item.skill === topicId && item.mode === "quiz"), 20); title = `${skillById(topicId)?.title || "Skill"} · module practice`; }
     if (kind === "lesson-practice") { const lesson = lessonById(topicId); items = (lesson?.activityIds || []).map(activityById).filter((item) => item?.mode === "quiz"); title = `${lesson?.title || "Lesson"} · guided practice`; }
     if (kind === "grammar-mini-test") { const grammar = grammarById(topicId); items = (grammar?.studio?.practiceIds || []).map(activityById).filter((item) => item?.mode === "quiz"); title = `${grammar?.title || "Grammar"} · mini-test`; }
     if (kind === "integrated-reading") { const unit = integratedUnitById(topicId); items = skillActivities.filter((item) => item.integratedUnitId === topicId && item.skill === "reading" && item.mode === "quiz"); title = `${unit?.title || "Integrated unit"} · reading`; }
@@ -580,10 +711,10 @@
     if (kind === "word-review") { items = vocabularyReviewItems(true); if (!items.length) items = vocabularyReviewItems(false); title = "Personal word-bank review"; }
     if (kind === "module-test") { const moduleExam = university.levelExams?.flatMap((exam) => exam.moduleTests || []).find((test) => test.moduleId === topicId); items = moduleExam?.questions || []; production = moduleExam?.production || []; title = moduleExam?.title || "Module checkpoint"; }
     if (kind === "diagnostic") { items = university.diagnostic || []; title = "B1+ → C1 diagnostic"; }
-    if (kind === "review") { items = reviewDue(); title = "Spaced review queue"; }
+    if (kind === "review") { items = smartPracticeSet(reviewDue(), 30); title = "Spaced review queue"; }
     if (kind === "level-exam") { const exam = university.levelExams?.find((item) => item.level === topicId); items = exam?.questions || []; production = exam?.production || []; title = exam?.title || "Level exam"; }
-    if (kind === "mistakes") { items = mistakes(); title = "Mistake review"; }
-    session = { kind, topicId, levelId, title, production, items: kind === "partial1" || kind === "partial2" || kind === "quick" || kind === "diagnostic" || kind === "level-exam" || kind === "skill-level" || kind === "module" || kind === "module-test" || kind === "lesson-practice" || kind === "grammar-mini-test" || kind === "integrated-reading" || kind === "integrated-listening" || kind === "skill-test" || kind === "progress-test" ? items : shuffle(items) };
+    if (kind === "mistakes") { items = smartPracticeSet(mistakes(), 30); title = "Mistake review"; }
+    session = { kind, topicId, levelId, title, production, returnTarget, items: kind === "partial1" || kind === "partial2" || kind === "quick" || kind === "diagnostic" || kind === "level-exam" || kind === "skill" || kind === "skill-level" || kind === "module" || kind === "module-test" || kind === "lesson-practice" || kind === "grammar-mini-test" || kind === "integrated-reading" || kind === "integrated-listening" || kind === "skill-test" || kind === "progress-test" || kind === "review" || kind === "mistakes" ? items : shuffle(items) };
     current = 0; selected = null; typedAnswer = ""; answered = false; sessionCorrect = 0; sessionDone = false;
     view = "session"; closeMenu(); render();
   }
@@ -680,6 +811,11 @@
 
   function navigate(nextView, topicId = null) {
     window.clearInterval(countdownHandle); countdownHandle = null; stopLocalRecording();
+    if (nextView === "skill" && (view !== "skill" || (topicId && topicId !== activeSkill))) {
+      skillLevelFilter = "all";
+      skillModeFilter = "all";
+      skillDisplayLimit = 24;
+    }
     view = nextView;
     if (nextView === "topic") activeTopic = topicId || activeTopic;
     if (nextView === "skill" || nextView === "level") activeSkill = topicId || activeSkill;
@@ -712,17 +848,25 @@
       if (results) results.innerHTML = searchResults(searchQuery);
       return;
     }
+    if (event.target.id === "challenge-draft") {
+      updateChallengeWorkspaceState();
+      return;
+    }
     if (event.target.id !== "written-input") return;
     typedAnswer = event.target.value;
     const submit = document.querySelector('[data-action="submit"]');
     if (submit) submit.disabled = !typedAnswer.trim();
   });
 
+  document.addEventListener("change", (event) => {
+    if (event.target.matches("[data-review-index]")) updateChallengeWorkspaceState();
+  });
+
   document.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && event.target.id === "written-input" && typedAnswer.trim() && !answered) document.querySelector('[data-action="submit"]')?.click();
   });
 
-  document.addEventListener("click", (event) => {
+  document.addEventListener("click", async (event) => {
     const option = event.target.closest("[data-option]");
     if (option && !answered) { selected = Number(option.dataset.option); renderSession(); return; }
     const control = event.target.closest("[data-action]");
@@ -757,6 +901,9 @@
     if (action === "stop-recording") { stopLocalRecording(); control.disabled = true; const start = document.querySelector('[data-action="start-recording"]'); if (start) start.disabled = false; return; }
     if (action === "lesson-complete") { progress[`lesson:${control.dataset.lesson}`] = { completedAt: new Date().toISOString() }; recordStudyDay(); saveProgress(); renderLesson(control.dataset.lesson); return; }
     if (action === "skill") { navigate("skill", control.dataset.skill); return; }
+    if (action === "activity-filter-level") { skillLevelFilter = control.dataset.level; skillDisplayLimit = 24; renderSkillPage(activeSkill); return; }
+    if (action === "activity-filter-mode") { skillModeFilter = control.dataset.mode; skillDisplayLimit = 24; renderSkillPage(activeSkill); return; }
+    if (action === "show-more-activities") { skillDisplayLimit += 24; renderSkillPage(activeSkill); return; }
     if (action === "projects") { navigate("projects"); return; }
     if (action === "challenge") { navigate("challenge", control.dataset.activity); return; }
     if (action === "favorite") { toggleFavorite(control.dataset.item); render(); return; }
@@ -767,8 +914,10 @@
     if (action === "review-due") { startSession("review"); return; }
     if (action === "speak") { if ("speechSynthesis" in window) { window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(control.dataset.speech || "English Lab practice"); const requestedLang = control.dataset.lang || "en-US"; const voices = window.speechSynthesis.getVoices(); utterance.lang = requestedLang; utterance.voice = voices.find((voice) => voice.lang.toLowerCase() === requestedLang.toLowerCase()) || voices.find((voice) => voice.lang.toLowerCase().startsWith(requestedLang.slice(0, 2).toLowerCase())) || null; utterance.rate = Number(control.dataset.rate || 0.9); window.speechSynthesis.speak(utterance); control.textContent = `Playing ${requestedLang}…`; utterance.onend = () => { control.textContent = "▶ Play again"; }; } return; }
     if (action === "toggle-transcript") { document.querySelector(".transcript-box")?.classList.toggle("is-hidden"); return; }
-    if (action === "toggle-model") { const guidance = document.querySelector(".model-guidance"); guidance?.classList.toggle("is-hidden"); control.textContent = guidance?.classList.contains("is-hidden") ? "Show model answer after self-review" : "Hide model answer"; return; }
-    if (action === "save-note") { const note = document.querySelector("#challenge-note")?.value.trim() || ""; const activityId = control.dataset.activity; recordStudyDay(); progress[`note:${activityId}`] = { text: note, updatedAt: new Date().toISOString() }; const oldChallenge = progress[activityId] || { attempts: 0, correct: 0, history: [] }; progress[activityId] = { ...oldChallenge, attempts: oldChallenge.attempts + 1, correct: oldChallenge.correct + 1, lastCorrect: true, completedAt: new Date().toISOString(), errorType: null }; saveProgress(); const status = control.parentElement.querySelector(".copy-status"); if (status) { status.textContent = "Reflection saved and challenge completed."; window.setTimeout(() => { status.textContent = ""; }, 2200); } return; }
+    if (action === "toggle-model") { const item = challengeItemById(activeChallenge); if (item && isWritingChallenge(item) && !challengeEvidenceState(item, true).ready) { updateChallengeWorkspaceState(); return; } if (item) persistChallengeWorkspace(item); const guidance = document.querySelector(".model-guidance"); guidance?.classList.toggle("is-hidden"); control.textContent = guidance?.classList.contains("is-hidden") ? "Show model answer after self-review" : "Hide model answer"; return; }
+    if (action === "save-challenge-work") { const item = challengeItemById(control.dataset.activity); if (!item) return; const state = persistChallengeWorkspace(item); const status = document.querySelector("#workspace-status"); if (status) { status.textContent = `Work saved · ${state.words} words · ${state.checked.length} checks.`; window.setTimeout(() => { status.textContent = ""; }, 2500); } updateChallengeWorkspaceState(); return; }
+    if (action === "copy-draft") { const value = document.querySelector("#challenge-draft")?.value || ""; try { await navigator.clipboard.writeText(value); } catch { const area = document.createElement("textarea"); area.value = value; document.body.append(area); area.select(); document.execCommand("copy"); area.remove(); } const status = document.querySelector("#workspace-status"); if (status) { status.textContent = "Draft copied."; window.setTimeout(() => { status.textContent = ""; }, 2000); } return; }
+    if (action === "complete-challenge") { const item = challengeItemById(control.dataset.activity); if (!item) return; const state = persistChallengeWorkspace(item); if (!state.ready) { const status = document.querySelector("#completion-status"); if (status) status.textContent = `Add evidence and complete at least ${state.requiredChecks} review checks first.`; updateChallengeWorkspaceState(); return; } const now = new Date().toISOString(); const oldChallenge = progress[item.id] || { attempts: 0, correct: 0, history: [] }; progress[item.id] = { ...oldChallenge, attempts: oldChallenge.attempts + (oldChallenge.completedAt ? 0 : 1), completedAt: oldChallenge.completedAt || now, production: true, evidence: { words: state.words, checked: state.checked.length, recorded: state.recorded }, history: [...(oldChallenge.history || []), { at: now, type: "production", words: state.words, checked: state.checked.length, recorded: state.recorded }].slice(-12) }; saveProgress(); renderChallenge(item.id); return; }
     if (action === "save-grammar-note") { const note = document.querySelector("#grammar-note")?.value.trim() || ""; progress[`note:grammar:${control.dataset.grammar}`] = { text: note, updatedAt: new Date().toISOString() }; recordStudyDay(); saveProgress(); const status = control.parentElement.querySelector(".copy-status"); if (status) status.textContent = "Grammar Studio work saved in this browser."; return; }
     if (action === "save-word") { const unit = integratedUnitById(control.dataset.unit); const entry = unit?.reading.vocabulary.find((candidate) => candidate.term === control.dataset.word); if (entry && !meta.vocabulary.some((candidate) => candidate.id === `${unit.id}:${entry.term}`)) { meta.vocabulary.push({ id: `${unit.id}:${entry.term}`, unitId: unit.id, level: unit.level, ...entry, addedAt: new Date().toISOString(), stage: 0, ease: 2.5, intervalDays: 1, nextReview: new Date(Date.now() + 86400000).toISOString() }); saveMeta(); control.textContent = "Saved ✓"; control.disabled = true; } return; }
     if (action === "save-catalog-word") { const domain = catalogs.vocabularyCatalog.find((item) => item.id === control.dataset.domain); const entry = domain?.entries.find(([word]) => word === control.dataset.word); const id = `catalog:${domain?.id}:${entry?.[0]}`; if (domain && entry && !meta.vocabulary.some((candidate) => candidate.id === id)) { meta.vocabulary.push({ id, level: domain.level, sourceTitle: domain.title, term: entry[0], collocation: entry[1], meaning: entry[2], stress: entry[0].toUpperCase(), addedAt: new Date().toISOString(), stage: 0, ease: 2.5, intervalDays: 1, nextReview: new Date(Date.now() + 86400000).toISOString() }); saveMeta(); control.textContent = "Saved ✓"; control.disabled = true; } return; }
@@ -781,7 +930,7 @@
     if (action === "partial-2-test") { startSession("partial2"); return; }
     if (action === "mistakes") { navigate("mistakes"); return; }
     if (action === "review-mistakes") { startSession("mistakes"); return; }
-    if (action === "exit-session") { if (session?.kind === "skill") navigate("skill", session.topicId); else if (session?.kind === "skill-level") navigate("integrated-exam", session.levelId); else if (session?.kind === "module" || session?.kind === "module-test") navigate("module", session.kind === "module-test" ? session.topicId : session.levelId); else if (session?.kind === "lesson-practice") navigate("lesson", session.topicId); else if (session?.kind === "grammar-mini-test") navigate("grammar-studio", session.topicId); else if (session?.kind === "integrated-reading" || session?.kind === "integrated-listening") navigate("integrated-unit", session.topicId); else if (session?.kind === "skill-test" || session?.kind === "progress-test") navigate("level", session.levelId); else if (session?.kind === "word-review") navigate("word-bank"); else if (session?.kind === "diagnostic") navigate("diagnostic"); else if (session?.kind === "level-exam") navigate("level", session.topicId); else session?.topicId ? navigate("topic", session.topicId) : navigate("home"); return; }
+    if (action === "exit-session") { if (session?.returnTarget?.view && session.returnTarget.view !== "session") navigate(session.returnTarget.view, session.returnTarget.id); else navigate("home"); return; }
     if (action === "copy-prompt") { copyPrompt(control); return; }
     if (action === "submit" && !answered) {
       const exercise = session.items[current]; const correct = isCorrectAnswer(exercise);

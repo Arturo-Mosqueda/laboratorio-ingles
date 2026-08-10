@@ -38,12 +38,16 @@ The browser stores progress, lesson completion, favorites, notes, result history
 
 The application includes:
 
+- filtered activity libraries that render 24 cards at a time instead of hundreds at once
+- smart 20–24-question skill sessions that prioritise mistakes, due review and unseen material; formal tests remain complete
 - per-skill and per-level progress evidence
+- separate guided accuracy and completed-production evidence, so an open task is never treated as an automatic correct answer
 - specific mistake records with the learner answer, accepted answer, date, topic, level, skill and error category
 - pattern-based recommendations and targeted mistake review
 - spaced repetition for difficult grammar, expressions, mistakes and the personal word bank
 - SpeechSynthesis playback with regional language hints and transcript fallback
 - local speaking timers and microphone recording; recordings never leave the browser tab
+- production workspaces with saved drafts, word count, persisted self-review, evidence requirements and gated writing models
 - topic-adapted text prompts for optional ChatGPT Voice practice, with no OpenAI API or service integration
 - course search, University sidebar, breadcrumbs, previous/next lesson navigation and dark/light mode
 

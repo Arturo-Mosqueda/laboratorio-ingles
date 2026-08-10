@@ -136,11 +136,24 @@
     }
   };
 
+  const customBriefs = {
+    "writing-b1-email": { wordLimit: "100–120 words", structure: ["Greeting and reason for the change", "Alternative plan with practical details", "Follow-up question and friendly closing"], language: ["I am sorry, but…", "Could we… instead?", "Which option works better for you?"] },
+    "writing-b2-report": { wordLimit: "180–220 words", structure: ["Purpose and evidence-based findings", "Problems organised under clear headings", "Actionable recommendations and review method"], language: ["The evidence indicates that…", "It is recommended that…", "The impact should be reviewed by…"] },
+    "writing-c1-synthesis": { wordLimit: "250–280 words", structure: ["Shared question and competing positions", "Comparison of assumptions and evidence", "Qualified synthesis with conditions"], language: ["Both perspectives recognise that…", "The central distinction lies in…", "A more defensible conclusion would…"] },
+    "writing-b1-description": { wordLimit: "100–120 words", structure: ["Identify and locate the place", "Develop sensory detail and routine", "Explain its personal significance"], language: ["The place that matters most to me…", "In the early morning…", "It matters because…"] },
+    "writing-b2-opinion": { wordLimit: "180–220 words", structure: ["Introduce the issue and position", "Develop benefits and a serious objection", "Reach a clear, qualified conclusion"], language: ["A strong reason in favour is…", "Critics may argue that…", "This should happen provided that…"] }
+  };
+
   Object.entries(customModels).forEach(([id, model]) => {
     const item = university.activities.find((candidate) => candidate.id === id);
     if (!item || !model) return;
+    const brief = customBriefs[id];
     item.modelAnswer = model.text;
     item.modelCommentary = model.commentary;
+    item.wordLimit ||= brief?.wordLimit;
+    item.recommendedStructure ||= brief?.structure;
+    item.usefulLanguage ||= brief?.language;
+    item.usefulGrammar ||= brief?.language;
     item.selfReviewCriteria = ["Grammar", "Vocabulary", "Coherence", "Cohesion", "Organisation", "Register", "Accuracy", "Range"];
   });
 })();

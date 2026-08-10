@@ -84,6 +84,38 @@ This file is updated throughout implementation so decisions and completed work r
 - Production page title verified as `English Lab · B2 Grammar`.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
 
+## Complete quality review — Phase 13 — 2026-08-10
+
+### Audit findings
+
+- Content volume was complete, but page and session volume were not yet learner-friendly. Vocabulary alone contained 711 activities, all rendered at once, and a full skill session could contain hundreds of questions.
+- Production persistence was too weak: saving a reflection marked a challenge complete and incremented the correct-answer count even when no draft, outline or recording existed.
+- Writing had delayed model content visually, but the learner could reveal it before producing evidence.
+- Skill accuracy mixed selected-response attempts and production completion, which made the percentage less interpretable.
+- Five legacy writing activities had complete models but lacked the same visible brief metadata as the 353 generated writing challenges.
+- The long desktop navigation created horizontal overflow at an intermediate 747-pixel browser width; home decoration, University summary metrics and level exam actions exposed three additional tablet-width overflow cases.
+
+### Decisions implemented
+
+- Use progressive disclosure rather than deleting or reducing content: 24 visible activity cards with level/type filters and a “show more” control.
+- Use bounded adaptive sessions for ordinary study while preserving full formal assessments.
+- Separate production evidence from quiz correctness. A production completion is portfolio evidence, not a scored correct answer.
+- Require a meaningful draft and self-review before completion; require the complete checklist before a writing model becomes available.
+- Count a local speaking recording only as an evidence timestamp. The audio blob remains local to the current tab and is never stored or uploaded.
+- Keep the established visual system and add only components required by the new learning workflow.
+
+### Verification evidence
+
+- Data audit passed: 16 topics, 244 core exercises, 2,886 University activities, 1,911 quizzes, 975 challenges, 358 complete writing challenges, 115 lessons, eight projects and 64 diagnostic questions.
+- All IDs are unique; quiz indexes, written accepted answers, skill/level assignments, lesson links and Grammar Studio links are valid.
+- All 14 skills retain at least 100 opportunities.
+- Encoding-safe scan found no Future Perfect, OpenAI runtime reference, placeholder text, Spanish instructional marker or UTF-8 replacement byte.
+- Local asset audit found all 14 HTML references and no external runtime dependency.
+- Headless interaction confirmed a 24-card Vocabulary library, functional Production filtering and a 24-question smart session.
+- Headless writing workflow confirmed locked initial state, live 90-word/eight-check readiness, persisted completion and zero automatic correct-answer credit.
+- Fifty-seven direct routes passed with zero runtime exceptions and no horizontal overflow at the test viewport.
+- True 390-pixel emulation passed for home, University, Vocabulary and Writing; each route had `clientWidth = scrollWidth = 390`.
+
 ## Deep-course completion research — 2026-08-10
 
 ### Research decisions
