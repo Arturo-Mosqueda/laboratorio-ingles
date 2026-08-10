@@ -197,3 +197,45 @@ The page also links the level’s portfolio project. Reading and listening secti
 - Writing briefs now expose word limit, recommended structure and useful language.
 - Model guidance remains hidden until the learner has drafted and completed the self-review checklist.
 - Level checkpoints now lead to production tasks rather than ending at a multiple-choice score.
+
+## Personal English University expansion — Phase 10
+
+### Real lesson and grammar studios
+
+- Replaced the repeated module lesson shell with 115 module-specific lessons across 23 modules.
+- Every lesson now has a concrete explanation, contextual model, three objectives, visual decision path, guided task, independent output, linked activity set, reflection state and previous/next navigation.
+- Added a complete Grammar Studio for all 72 roadmap topics: meaning, form, contextual model, nearby contrast, decision questions, linked mini-test and independent production.
+- Added breadcrumbs and direct routes for levels, modules, lessons, Grammar Studios, integrated units, skills and challenges.
+
+## Personal English University expansion — Phase 11
+
+### Source-based depth and learner evidence
+
+- Added eight substantial integrated units, two at each level, containing original reading, contextual vocabulary, playable listening, comprehension, discussion, pronunciation transfer, speaking, writing and critical thinking.
+- Expanded the reading and listening libraries to 16 sources each and added regional SpeechSynthesis language hints with transcript fallback.
+- Expanded Writing to 23 genres and 358 production challenges. Every writing challenge has a complete model, commentary and eight-part self-review; the model remains hidden until the learner chooses to reveal it.
+- Expanded all 22 vocabulary domains to six contextual entries and a full lexical system. Added a personal word bank with retrieval intervals, stages, pronunciation playback and due-item review.
+- Enriched all eight projects with milestones, deliverables, models, commentary, rubrics and portfolio evidence.
+- Added local speaking timers and browser-only microphone recording.
+- Upgraded error evidence, SRS stage/ease, estimated skill levels, diagnostic feedback and recommendation logic.
+- Rebuilt assessment as 64 diagnostic questions, 23 module tests, 32 skill tests, 12 progress tests and four 48-question finals with productive follow-up routes.
+
+## Personal English University expansion — Phase 12
+
+### Technical English and final QA
+
+- Added Technical English as the fourteenth skill lab.
+- Added a dedicated five-lesson B2+ Technical English module and connected Technical English to suitable B1+, B2 and C1 modules.
+- Added 32 original technical scenarios and 166 activities across software, data, AI, robotics, engineering, aerospace, climate and finance.
+- Technical practice explicitly connects definition, process, evidence, failure mode, safeguard, limitation, audience adaptation and spontaneous defence.
+- Added a pronunciation transfer diagram and a five-stage technical-explanation diagram using HTML and CSS.
+
+### Final verification gates
+
+- Structural validation passed for 2,886 unique University activities, 244 preserved core exercises, 115 lessons, 72 Grammar Studios, 132 lexical entries, 358 writing challenges, 64 diagnostic questions and all assessment pools.
+- Every quiz answer index, written-answer array, module assignment, lesson link and Grammar Studio practice link is valid.
+- Every one of the 14 skills has at least 100 practice opportunities.
+- Learner-facing HTML and JavaScript contain no Future Perfect unit.
+- Chrome headless route tests passed for levels, modules, lessons, Grammar Studios, Technical English, integrated units, projects, writing and the word bank.
+- Desktop and narrow responsive screenshots were reviewed; the established visual system remains unchanged in character.
+- Production deployment and live GitHub Pages verification remain the final publication gate.

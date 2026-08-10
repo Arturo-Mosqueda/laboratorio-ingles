@@ -10,7 +10,7 @@
       outcome: "Handle everyday situations, explain experiences clearly and write connected paragraphs with reliable grammar.",
       modules: [
         { id: "b1-grammar", title: "Grammar control", focus: "Core tenses, modals, conditionals, articles and sentence building.", skills: ["grammar", "use-of-english"] },
-        { id: "b1-vocabulary", title: "Everyday vocabulary", focus: "Collocations, word families, phrasal verbs and practical topic language.", skills: ["vocabulary", "english-thinking"] },
+        { id: "b1-vocabulary", title: "Everyday vocabulary", focus: "Collocations, word families, phrasal verbs and practical topic language.", skills: ["vocabulary", "english-thinking", "technical-english"] },
         { id: "b1-reading", title: "Reading for meaning", focus: "Short articles, messages and narratives with main-idea and detail strategies.", skills: ["reading", "critical-thinking"] },
         { id: "b1-communication", title: "Everyday communication", focus: "Descriptions, stories, requests and short opinion exchanges.", skills: ["speaking", "writing", "fluency", "english-thinking"] },
         { id: "b1-sound", title: "Clear English", focus: "Key vowel contrasts, word stress and intelligible connected speech.", skills: ["listening", "pronunciation"] }
@@ -27,7 +27,7 @@
         { id: "b2-grammar", title: "Grammar in context", focus: "Mixed tenses, passive voice, clauses, modality and advanced linking.", skills: ["grammar", "use-of-english"] },
         { id: "b2-vocabulary", title: "Precision and collocation", focus: "Topic vocabulary, register, word formation and natural combinations.", skills: ["vocabulary"] },
         { id: "b2-reading", title: "Reading between the lines", focus: "Reports, articles, interviews and narratives with inference and tone.", skills: ["reading", "critical-thinking"] },
-        { id: "b2-writing", title: "B2 writing studio", focus: "Essays, reports, reviews, proposals, narratives and formal emails.", skills: ["writing", "academic-english", "professional-english"] },
+        { id: "b2-writing", title: "B2 writing studio", focus: "Essays, reports, reviews, proposals, narratives and formal emails.", skills: ["writing", "academic-english", "professional-english", "technical-english"] },
         { id: "b2-speaking", title: "Discussion and problem solving", focus: "Comparing, speculating, negotiating and responding to counterarguments.", skills: ["speaking", "fluency", "professional-english"] },
         { id: "b2-listening", title: "Natural-speed listening", focus: "Interviews, announcements, lectures and speaker attitude.", skills: ["listening", "pronunciation"] }
       ],
@@ -44,6 +44,7 @@
         { id: "b2p-language", title: "Advanced lexical control", focus: "Connotation, idioms, sophisticated collocations and word formation.", skills: ["vocabulary"] },
         { id: "b2p-reading", title: "Argument and evidence", focus: "Long-form journalism, science writing and competing viewpoints.", skills: ["reading", "critical-thinking"] },
         { id: "b2p-production", title: "Fluent production", focus: "Timed speaking, synthesis, summaries and controlled rewriting.", skills: ["speaking", "writing", "fluency", "academic-english"] },
+        { id: "b2p-technical", title: "Technical English studio", focus: "Systems, requirements, processes, evidence, failure modes, safeguards and audience-aware technical explanation.", skills: ["technical-english", "professional-english", "academic-english"] },
         { id: "b2p-listening", title: "Connected speech lab", focus: "Reduced forms, discourse markers, stance and varied delivery.", skills: ["listening", "pronunciation"] }
       ],
       exam: "B2+ range and fluency exam"
@@ -59,7 +60,7 @@
         { id: "c1-vocabulary", title: "Sophisticated expression", focus: "Nominalisation, metaphor, register, idiomatic precision and academic phraseology.", skills: ["vocabulary"] },
         { id: "c1-reading", title: "Critical and academic reading", focus: "Research-style texts, bias, assumptions, synthesis and authorial purpose.", skills: ["reading", "critical-thinking"] },
         { id: "c1-writing", title: "C1 writing and synthesis", focus: "Argumentative essays, critical responses, proposals and formal correspondence.", skills: ["writing", "academic-english", "professional-english"] },
-        { id: "c1-speaking", title: "Academic and professional speaking", focus: "Presentations, negotiation, challenge, defence and spontaneous follow-up.", skills: ["speaking", "academic-english", "professional-english", "fluency"] },
+        { id: "c1-speaking", title: "Academic and professional speaking", focus: "Presentations, negotiation, challenge, defence and spontaneous follow-up.", skills: ["speaking", "academic-english", "professional-english", "technical-english", "fluency"] },
         { id: "c1-listening", title: "Complex listening", focus: "Lectures, debates, implied meaning, attitude and multiple accents.", skills: ["listening", "pronunciation"] }
       ],
       exam: "C1 integrated exam"
@@ -79,7 +80,8 @@
     { id: "fluency", icon: "FL", title: "Fluency training", description: "Build speaking speed and flexibility through timed description, comparison, explanation and speculation.", color: "coral" },
     { id: "english-thinking", icon: "ET", title: "English thinking", description: "Paraphrase, define, describe and retrieve meaning without translating word by word.", color: "teal" },
     { id: "academic-english", icon: "AC", title: "Academic English", description: "Use evidence, cautious claims, structure and source-aware language in study contexts.", color: "purple" },
-    { id: "professional-english", icon: "PR", title: "Professional English", description: "Handle meetings, emails, interviews, reports, presentations and workplace problem-solving.", color: "rose" }
+    { id: "professional-english", icon: "PR", title: "Professional English", description: "Handle meetings, emails, interviews, reports, presentations and workplace problem-solving.", color: "rose" },
+    { id: "technical-english", icon: "TE", title: "Technical English", description: "Explain systems, processes, evidence, constraints, failure modes and safeguards precisely to specialist and non-specialist audiences.", color: "blue" }
   ];
 
   const activities = [

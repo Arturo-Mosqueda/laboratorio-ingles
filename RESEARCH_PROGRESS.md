@@ -84,6 +84,50 @@ This file is updated throughout implementation so decisions and completed work r
 - Production page title verified as `English Lab · B2 Grammar`.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
 
+## Deep-course completion research — 2026-08-10
+
+### Research decisions
+
+- Cambridge B2 First and C1 Advanced public formats remain structural references only. The implementation uses multi-part Reading/Use of English, Writing, Listening and Speaking routes, but no official question has been copied.
+- CEFR’s action-oriented model informed the decision to require reception, production, interaction, reflection and portfolio evidence rather than treating a selected-response score as complete language ability.
+- Browser SpeechSynthesis remains an accessibility and practice mechanism, not a claim of recorded accent authenticity. Regional language hints (`en-GB`, `en-US`, `en-CA`, `en-AU`) request suitable installed voices, while every task retains a transcript fallback.
+- Educational diagrams were implemented in HTML and CSS because timelines, decision paths, pronunciation transfer and technical process relationships need responsive labels and direct connection to interactive tasks. No decorative image was added where it would not improve understanding.
+
+Sources retained for the assessment rationale:
+
+- https://www.cambridgeenglish.org/exams-and-tests/qualifications/advanced/format/
+- https://www.cambridgeenglish.org/exams-and-tests/first/exam-format/
+- https://www.coe.int/en/web/common-european-framework-reference-languages/introduction-and-context
+- https://book.coe.int/en/education-and-modern-languages/8152-common-european-framework-of-reference-for-languages-learning-teaching-assessment-companion-volume.html
+
+### Content depth completed
+
+- Converted all 23 modules into openable, module-specific five-lesson routes: 115 lessons in total.
+- Built 72 complete Grammar Studios and kept the original 16 topics, 244 exercises, two partial exams, detailed guides, diagrams and text-only topic voice prompts.
+- Added eight integrated source-based units and expanded the libraries to 16 readings and 16 playable listening sources.
+- Added 23 writing genres and verified 358 writing challenges with complete models, commentary and eight self-review criteria.
+- Expanded vocabulary to 132 contextual entries across 22 domains, each with a lexical system and personal spaced-retrieval word-bank support.
+- Enriched eight portfolio projects with milestones, deliverables and evidence rubrics.
+- Added a dedicated Technical English progression: 32 scenarios and 166 activities, including a five-lesson B2+ module.
+
+### System and assessment progress
+
+- Added browser-local timer and recording support for oral tasks; recordings are never uploaded.
+- Persisted richer error evidence: learner answer, accepted answer, date, error type, topic, skill and level.
+- Added SRS stage, ease and intervals for regular mistakes and the vocabulary bank.
+- Added evidence-aware skill-level estimates and more specific pattern recommendations.
+- Rebuilt the evaluation ladder: 64 diagnostic questions, 23 module tests, 32 skill tests, 12 progress tests and four 48-question level finals with writing/speaking/portfolio follow-up.
+
+### QA evidence before publication
+
+- Data/syntax validation passed with 2,886 unique University activities: 1,911 quizzes and 975 production challenges.
+- Skill opportunity counts are Grammar 345, Vocabulary 711, Reading 169, Writing 367, Listening 162, Speaking 172, Pronunciation 137, Use of English 115, Critical Thinking 127, Fluency 108, English Thinking 102, Academic English 101, Professional English 104 and Technical English 166.
+- Validation confirmed 23 modules, 115 lessons, 72 Grammar Studios, 132 lexical entries, 358 complete writing models, 32 technical scenarios, eight integrated units, eight projects and 64 diagnostic questions.
+- Chrome headless route checks passed for Technical English, the B2+ technical module, a technical lesson, a Grammar Studio, an integrated C1 unit, a C1 project, delayed writing feedback and the personal word bank.
+- Desktop and 500-pixel narrow renders were visually reviewed. Chrome on Windows enforces a minimum internal headless layout width near 500 pixels; a 390-pixel screenshot crops that larger layout and is therefore not used as evidence of browser overflow.
+- Learner-facing HTML and JavaScript contain no Future Perfect course content.
+- GitHub Pages deployment is still pending for this expanded build.
+
 ## Roadmap follow-up — B1+ perfect continuous — 2026-08-09
 
 - Added `Present Perfect Continuous` and `Past Perfect Continuous` to the B1+ grammar roadmap so the progression explicitly names every required present and past perfect form.
