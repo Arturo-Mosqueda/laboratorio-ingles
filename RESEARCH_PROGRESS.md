@@ -101,6 +101,13 @@ This file is updated throughout implementation so decisions and completed work r
 - Browser QA confirmed the 24-question diagnostic, the 21-question B1+ checkpoint, 35 Vocabulary activities plus 22 vocabulary catalogue cards and no 390 px overflow.
 - Browser QA recorded no JavaScript errors.
 
+### Phase 5 deployment
+
+- Implementation commit: `e59d188`.
+- GitHub Pages workflow run `31356299389` completed successfully.
+- Production returned HTTP 200 for the page and `activity-expansion.js`; deployed checks confirmed catalog-linked activity generation and balanced diagnostic generation.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
+
 ## Personal English University — Phase 2 — 2026-08-09
 
 ### Content expansion
