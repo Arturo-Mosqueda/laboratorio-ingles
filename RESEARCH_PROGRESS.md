@@ -117,6 +117,13 @@ This file is updated throughout implementation so decisions and completed work r
 - Browser QA confirmed 13 skill cards, the Grammar card showing all 244 core questions, five module lessons, lesson completion, an 11-question level checkpoint, favorites, the 16-topic Grammar route and no 390 px horizontal overflow.
 - Browser QA recorded no JavaScript errors.
 
+### Phase 3 deployment
+
+- Implementation commit: `0492a23`.
+- GitHub Pages workflow run `31355493399` completed successfully.
+- Production returned HTTP 200; the deployed `app.js` includes favorites and level-exam logic, and `curriculum.js` includes the expanded professional/academic activity bank.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
+
 ## Expansion research — 2026-07-18
 
 ### Requested scope
