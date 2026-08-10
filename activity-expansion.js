@@ -21,6 +21,16 @@
   catalogs.writingCatalog.forEach((brief) => {
     add(challenge(`writing-brief-${brief.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`, "writing", brief.level, brief.title, `Complete the ${brief.genre.toLowerCase()} brief: ${brief.title}. Write ${brief.wordLimit}, follow the recommended structure and complete a self-review before comparing your draft with feedback.`, ["Plan the audience and purpose.", `Use the structure: ${brief.structure.join(" → ")}.`, `Include language work on: ${brief.language.join(", ")}.`], ["Word limit respected", "Structure complete", "Audience and register", "Self-review"], "A strong draft makes its purpose visible and gives every paragraph a job."));
   });
+  activities.filter((item) => item.id.startsWith("writing-brief-")).forEach((item) => {
+    const brief = catalogs.writingCatalog.find((candidate) => item.title === candidate.title);
+    if (!brief) return;
+    Object.assign(item, {
+      wordLimit: brief.wordLimit,
+      recommendedStructure: brief.structure,
+      usefulLanguage: brief.language,
+      modelAnswer: `Model response guidance: address ${brief.structure.join(", ")} in a ${brief.genre.toLowerCase()} for the intended audience. Use ${brief.language.join(", ")} accurately, support the main points with specific details and finish with a controlled conclusion.`
+    });
+  });
 
   catalogs.speakingSimulations.forEach((simulation) => {
     add(challenge(`speaking-simulation-${simulation.id}`, "speaking", simulation.level, simulation.title, `Run the ${simulation.title.toLowerCase()} simulation. Roles: ${simulation.roles.join(" and ")}. Goal: ${simulation.goal}`, ["Prepare five keywords, not a script.", "Ask at least one follow-up question.", "Finish by summarising the next step."], ["Role maintained", "Interaction", "Useful language", "Follow-up", "Outcome"], "A successful simulation ends with a clear outcome, not only fluent sentences."));

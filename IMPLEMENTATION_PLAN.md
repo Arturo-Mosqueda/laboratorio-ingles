@@ -141,3 +141,9 @@ Phase 1 includes 22 curriculum modules, nine skill labs, 23 starter activities, 
 - Expanded the full diagnostic to 24 questions, balanced at six signals per level.
 - Rebuilt level checkpoints after expansion: 21 B1+, 23 B2, 18 B2+ and 21 C1 guided questions, with six production tasks each.
 - Added a production route to level-exam results so each checkpoint leads into open writing, speaking, academic or professional work.
+
+### Phase 6 writing pedagogy
+
+- Writing briefs now expose word limit, recommended structure and useful language.
+- Model guidance remains hidden until the learner has drafted and completed the self-review checklist.
+- Level checkpoints now lead to production tasks rather than ending at a multiple-choice score.

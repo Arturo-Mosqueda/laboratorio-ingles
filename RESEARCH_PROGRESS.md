@@ -101,6 +101,21 @@ This file is updated throughout implementation so decisions and completed work r
 - Browser QA confirmed the 24-question diagnostic, the 21-question B1+ checkpoint, 35 Vocabulary activities plus 22 vocabulary catalogue cards and no 390 px overflow.
 - Browser QA recorded no JavaScript errors.
 
+## Personal English University — Phase 6 — 2026-08-09
+
+### Writing pedagogy
+
+- Added word-limit, recommended-structure and useful-language metadata to catalog-linked writing briefs.
+- Changed challenges so model guidance is hidden initially; learners must draft and complete the self-review checklist before revealing it.
+- Kept model guidance concise and explanatory rather than presenting an unexplained perfect answer.
+- Kept open production tasks attached to level checkpoint results.
+
+### Phase 6 QA
+
+- Syntax checks passed for `activity-expansion.js` and `app.js`.
+- Browser QA confirmed a writing brief displays its metadata, hides model guidance initially, reveals it on demand and has no 390 px overflow.
+- Browser QA recorded no JavaScript errors.
+
 ### Phase 5 deployment
 
 - Implementation commit: `e59d188`.
