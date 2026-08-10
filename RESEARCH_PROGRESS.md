@@ -117,6 +117,13 @@ This file is updated throughout implementation so decisions and completed work r
 - Browser QA confirmed 55 grammar cards, 22 vocabulary cards, 8 reading cards with expandable text, 10 speaking cards with model-play controls and no 390 px horizontal overflow.
 - Browser QA recorded no JavaScript errors.
 
+### Phase 4 deployment
+
+- Implementation commit: `f45bb02`.
+- GitHub Pages workflow run `31355944565` completed successfully.
+- Production returned HTTP 200 for the site and `catalogs.js`; deployed content checks found the C1 grammar map, AI vocabulary domain and script inclusion.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
+
 ## Personal English University — Phase 3 — 2026-08-09
 
 ### Learner tracking
