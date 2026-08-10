@@ -109,3 +109,20 @@ The existing grammar course remains the B2 core. A curriculum layer now surround
 The new data model lives in `curriculum.js` and keeps levels, modules, skills, activities, projects and diagnostic questions separate from the original `GrammarLabData` bank. This allows new content to grow without changing the 16 current grammar topics or their 244 exercises.
 
 Phase 1 includes 22 curriculum modules, nine skill labs, 23 starter activities, eight integrated projects and a six-question B1+→C1 diagnostic. Vocabulary, reading, Use of English and the receptive/production skills now have their own pages, guided quiz sessions and open-ended challenges. Listening and pronunciation challenges use the browser’s SpeechSynthesis API when available and retain a transcript/model fallback.
+
+### Phase 2 content depth
+
+- All 22 modules now expose five lessons: understand, notice, control, use independently and stretch the choice.
+- The curriculum now includes 13 skill labs, adding Fluency Training, English Thinking, Academic English and Professional English to the original nine areas.
+- Added 66 additional activities, bringing the University starter bank to 89 items: 45 guided quizzes and 44 production challenges.
+- Added level checkpoints with 11 B1+, 13 B2, 9 B2+ and 12 C1 guided questions, plus production routes.
+- Added module assessment blueprints covering quiz, reading, listening, writing and speaking for every module.
+- Added a dedicated Grammar skill route that exposes all 16 existing topics and their 244 questions without duplicating the grammar bank.
+
+### Phase 3 learner tracking
+
+- Added five-stage lesson completion for every module.
+- Added level exam sessions based on each level’s guided quiz bank.
+- Added local favorites for activities and projects.
+- Added a study streak, result history and diagnostic level estimate to `localStorage`.
+- Added interval-based review dates: correct answers return after expanding intervals, while incorrect answers return immediately with an error category.

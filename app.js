@@ -2,9 +2,10 @@
   "use strict";
 
   const { topics, guides, exercises } = window.GrammarLabData;
-  const university = window.EnglishUniversityData || { levels: [], skills: [], activities: [], projects: [], diagnostic: [] };
+  const university = window.EnglishUniversityData || { levels: [], skills: [], activities: [], projects: [], diagnostic: [], levelExams: [] };
   const skillActivities = university.activities || [];
   const storageKey = "english-lab-progress-v2";
+  const metaStorageKey = "english-lab-meta-v1";
   const app = document.querySelector("#app");
   const nav = document.querySelector("#main-nav");
   const menuButton = document.querySelector('[data-action="menu"]');
@@ -13,7 +14,9 @@
   let activeTopic = null;
   let activeSkill = null;
   let activeChallenge = null;
+  let activeModule = null;
   let progress = loadProgress();
+  let meta = loadMeta();
   let session = null;
   let current = 0;
   let selected = null;
@@ -31,9 +34,37 @@
     catch { return {}; }
   }
 
+  function loadMeta() {
+    try { return JSON.parse(localStorage.getItem(metaStorageKey)) || { favorites: [], results: [], streak: 0, lastStudyDate: null, levelEstimate: null }; }
+    catch { return { favorites: [], results: [], streak: 0, lastStudyDate: null, levelEstimate: null }; }
+  }
+
   function saveProgress() {
     try { localStorage.setItem(storageKey, JSON.stringify(progress)); }
     catch { /* Storage is optional. */ }
+  }
+
+  function saveMeta() {
+    try { localStorage.setItem(metaStorageKey, JSON.stringify(meta)); }
+    catch { /* Storage is optional. */ }
+  }
+
+  function recordStudyDay() {
+    const today = new Date().toISOString().slice(0, 10);
+    if (meta.lastStudyDate === today) return;
+    const previous = new Date(`${today}T00:00:00Z`);
+    previous.setUTCDate(previous.getUTCDate() - 1);
+    const yesterday = previous.toISOString().slice(0, 10);
+    meta.streak = meta.lastStudyDate === yesterday ? (meta.streak || 0) + 1 : 1;
+    meta.lastStudyDate = today;
+    saveMeta();
+  }
+
+  function isFavorite(id) { return meta.favorites.includes(id); }
+
+  function toggleFavorite(id) {
+    meta.favorites = isFavorite(id) ? meta.favorites.filter((item) => item !== id) : [...meta.favorites, id];
+    saveMeta();
   }
 
   function shuffle(items) {
@@ -59,6 +90,7 @@
   const percent = (correct, total) => total ? Math.round((correct / total) * 100) : 0;
   const skillById = (id) => university.skills.find((skill) => skill.id === id);
   const activityById = (id) => skillActivities.find((activity) => activity.id === id);
+  const moduleById = (id) => university.levels.flatMap((level) => level.modules.map((module) => ({ ...module, level }))).find((module) => module.id === id);
   const topicById = (id) => topics.find((topic) => topic.id === id) || skillById(id) || (String(id || "").startsWith("skill-") ? skillById(String(id).slice(6)) : null) || {
     id, title: "Diagnostic", icon: "DI", description: "Level diagnostic", partial: null
   };
@@ -80,7 +112,7 @@
   }
 
   function skillStats(skillId) {
-    return statsFor(skillActivities.filter((item) => item.skill === skillId));
+    return statsFor(skillId === "grammar" ? exercises : skillActivities.filter((item) => item.skill === skillId));
   }
 
   function renderLevelCard(level) {
@@ -92,8 +124,9 @@
 
   function renderSkillCard(skill) {
     const items = skillActivities.filter((item) => item.skill === skill.id);
+    const total = skill.id === "grammar" ? exercises.length : items.length;
     const stats = skillStats(skill.id);
-    return `<article class="skill-card"><div class="skill-card-top"><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span>${items.length} starter activities</span></div><h3>${escapeHtml(skill.title)}</h3><p>${escapeHtml(skill.description)}</p><div class="mini-progress"><span style="width:${items.length ? stats.mastered / items.length * 100 : 0}%"></span></div><div class="skill-card-footer"><span>${stats.mastered} mastered</span><button class="card-link" data-action="skill" data-skill="${skill.id}">Open lab →</button></div></article>`;
+    return `<article class="skill-card"><div class="skill-card-top"><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span>${total} ${skill.id === "grammar" ? "core questions" : "starter activities"}</span></div><h3>${escapeHtml(skill.title)}</h3><p>${escapeHtml(skill.description)}</p><div class="mini-progress"><span style="width:${total ? stats.mastered / total * 100 : 0}%"></span></div><div class="skill-card-footer"><span>${stats.mastered} mastered</span><button class="card-link" data-action="skill" data-skill="${skill.id}">Open lab →</button></div></article>`;
   }
 
   function renderUniversityOverview() {
@@ -127,22 +160,34 @@
   function renderUniversity() {
     const completed = allPracticeItems.filter((item) => progress[item.id]?.lastCorrect).length;
     const due = reviewDue().length;
-    app.innerHTML = `<section class="content-page university-page"><div class="page-heading"><span class="eyebrow">Personal English University</span><h1>Build English for real life, study and work.</h1><p>Follow a progressive B1+ → B2 → B2+ → C1 route. Existing grammar remains available below, while the new skill labs turn knowledge into understanding and communication.</p></div><div class="university-summary"><div><strong>${completed}</strong><span>activities mastered</span></div><div><strong>${university.levels.length}</strong><span>levels</span></div><div><strong>${university.projects.length}</strong><span>integrated projects</span></div><button class="primary" data-action="diagnostic">Take the level diagnostic →</button></div><div class="review-strip"><div><span class="eyebrow">Study queue</span><h3>${due ? `${due} activities ready for review` : "Your review queue is clear"}</h3><p>Correct answers return after a longer interval; difficult answers come back sooner.</p></div><button class="secondary" data-action="review-due" ${due ? "" : "disabled"}>Open review queue →</button></div>${renderUniversityOverview()}<section class="curriculum-principles"><span class="eyebrow">Study method</span><h2>Learn → practise → produce → reflect</h2><div class="principle-grid"><div><strong>Input</strong><p>Read and listen to language in meaningful contexts.</p></div><div><strong>Control</strong><p>Use guided grammar, vocabulary and Use of English practice.</p></div><div><strong>Production</strong><p>Write, speak, pronounce and solve open-ended challenges.</p></div><div><strong>Reflection</strong><p>Review mistakes, record progress and return to difficult skills.</p></div></div></section></section>`;
+    app.innerHTML = `<section class="content-page university-page"><div class="page-heading"><span class="eyebrow">Personal English University</span><h1>Build English for real life, study and work.</h1><p>Follow a progressive B1+ → B2 → B2+ → C1 route. Existing grammar remains available below, while the new skill labs turn knowledge into understanding and communication.</p></div><div class="university-summary"><div><strong>${completed}</strong><span>activities mastered</span></div><div><strong>${university.levels.length}</strong><span>levels</span></div><div><strong>${meta.streak || 0}</strong><span>day streak</span></div><div><strong>${escapeHtml(meta.levelEstimate || "Not measured")}</strong><span>starting estimate</span></div><button class="primary" data-action="diagnostic">Take the level diagnostic →</button></div><div class="review-strip"><div><span class="eyebrow">Study queue</span><h3>${due ? `${due} activities ready for review` : "Your review queue is clear"}</h3><p>Correct answers return after a longer interval; difficult answers come back sooner.</p></div><button class="secondary" data-action="review-due" ${due ? "" : "disabled"}>Open review queue →</button></div>${renderUniversityOverview()}<section class="curriculum-principles"><span class="eyebrow">Study method</span><h2>Learn → practise → produce → reflect</h2><div class="principle-grid"><div><strong>Input</strong><p>Read and listen to language in meaningful contexts.</p></div><div><strong>Control</strong><p>Use guided grammar, vocabulary and Use of English practice.</p></div><div><strong>Production</strong><p>Write, speak, pronounce and solve open-ended challenges.</p></div><div><strong>Reflection</strong><p>Review mistakes, record progress and return to difficult skills.</p></div></div></section></section>`;
   }
 
   function renderLevel(levelId) {
     const level = university.levels.find((item) => item.id === levelId);
     if (!level) return renderUniversity();
-    app.innerHTML = `<section class="content-page level-page"><button class="back-link" data-action="university">← University map</button><div class="page-heading"><span class="eyebrow">Level ${escapeHtml(level.code)}</span><h1>${escapeHtml(level.title)}</h1><p>${escapeHtml(level.description)} ${escapeHtml(level.outcome)}</p></div><div class="module-list">${level.modules.map((module, index) => `<article class="module-card"><span class="module-number">${String(index + 1).padStart(2, "0")}</span><div><span class="eyebrow">${escapeHtml(module.skills.join(" · "))}</span><h2>${escapeHtml(module.title)}</h2><p>${escapeHtml(module.focus)}</p><div class="module-actions">${module.skills.map((skillId) => skillById(skillId) ? `<button class="secondary" data-action="skill" data-skill="${skillId}">${escapeHtml(skillById(skillId).title)} lab →</button>` : "").join("")}</div></div></article>`).join("")}</div><section class="exam-route"><div><span class="eyebrow">Milestone</span><h2>${escapeHtml(level.exam)}</h2><p>Complete the modules, save evidence in your portfolio and return here when your skill scores are ready.</p></div><button class="primary" data-action="diagnostic">Open diagnostic →</button></section></section>`;
+    const levelExam = university.levelExams?.find((exam) => exam.level === level.id);
+    app.innerHTML = `<section class="content-page level-page"><button class="back-link" data-action="university">← University map</button><div class="page-heading"><span class="eyebrow">Level ${escapeHtml(level.code)}</span><h1>${escapeHtml(level.title)}</h1><p>${escapeHtml(level.description)} ${escapeHtml(level.outcome)}</p></div><div class="module-list">${level.modules.map((module, index) => `<article class="module-card"><span class="module-number">${String(index + 1).padStart(2, "0")}</span><div><span class="eyebrow">${escapeHtml(module.skills.join(" · "))}</span><h2>${escapeHtml(module.title)}</h2><p>${escapeHtml(module.focus)}</p><div class="module-meta"><span>${module.lessons?.length || 0} lessons</span><span>${escapeHtml(module.assessment?.quiz || "Module checkpoint")}</span></div><div class="module-actions"><button class="primary" data-action="module" data-module="${module.id}">Open module →</button>${module.skills.map((skillId) => skillById(skillId) ? `<button class="secondary" data-action="skill" data-skill="${skillId}">${escapeHtml(skillById(skillId).title)} lab →</button>` : "").join("")}</div></div></article>`).join("")}</div><section class="exam-route"><div><span class="eyebrow">Milestone</span><h2>${escapeHtml(level.exam)}</h2><p>${levelExam?.questions.length || 0} guided questions plus a production route. Complete the modules, save evidence in your portfolio and return here when your skill scores are ready.</p></div><div class="exam-actions"><button class="primary" data-action="level-exam" data-level="${level.id}">Start level exam →</button><button class="secondary" data-action="diagnostic">Open diagnostic →</button></div></section></section>`;
+  }
+
+  function renderModule(moduleId) {
+    const module = moduleById(moduleId);
+    if (!module) return renderUniversity();
+    const routeItems = skillActivities.filter((item) => module.skills.includes(item.skill) && item.level === module.level.id);
+    app.innerHTML = `<section class="content-page module-page"><button class="back-link" data-action="level" data-level="${module.level.id}">← Back to ${escapeHtml(module.level.code)} level</button><div class="page-heading"><span class="eyebrow">${escapeHtml(module.level.code)} module</span><h1>${escapeHtml(module.title)}</h1><p>${escapeHtml(module.focus)} The module route is designed as input, guided control, independent production and a final stretch task.</p></div><div class="lesson-route">${(module.lessons || []).map((lesson, index) => `<article class="lesson-card"><span class="module-number">${String(index + 1).padStart(2, "0")}</span><div><span class="eyebrow">${escapeHtml(lesson.stage)}</span><h2>${escapeHtml(lesson.title)}</h2><p>${escapeHtml(lesson.body)}</p><button class="secondary" data-action="module-lesson" data-lesson="${lesson.id}">Mark lesson complete →</button></div></article>`).join("")}</div><div class="module-assessment"><span class="eyebrow">Module assessment route</span><h2>From recognition to production</h2><div class="assessment-route"><div><strong>Quiz</strong><span>${escapeHtml(module.assessment.quiz)}</span></div><div><strong>Reading</strong><span>${escapeHtml(module.assessment.reading)}</span></div><div><strong>Listening</strong><span>${escapeHtml(module.assessment.listening)}</span></div><div><strong>Writing / speaking</strong><span>${escapeHtml(module.assessment.writing)}</span></div></div>${routeItems.length ? `<button class="primary" data-action="skill-practice" data-skill="${routeItems[0].skill}">Start related ${escapeHtml(skillById(routeItems[0].skill)?.title || "skill")} practice →</button>` : ""}</div></section>`;
   }
 
   function renderSkillPage(skillId) {
     const skill = skillById(skillId);
     if (!skill) return renderUniversity();
+    if (skillId === "grammar") {
+      app.innerHTML = `<section class="content-page skill-page"><button class="back-link" data-action="university">← University map</button><div class="skill-page-hero"><div><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span class="eyebrow">B2 grammar core</span><h1>Grammar</h1><p>${escapeHtml(skill.description)} The original 16-topic course remains the central grammar route, with detailed lessons, diagrams, quick tests and two partial exams.</p></div><button class="primary" data-action="all-practice">Practise all ${exercises.length} grammar questions →</button></div><section class="grammar-core-route"><div class="section-heading"><div><span class="eyebrow">Core route</span><h2>Choose a grammar topic</h2></div><p>Open any unit for its explanation, examples, practice bank, mini-test and voice prompt.</p></div><div class="topic-grid">${topics.map((topic, index) => renderTopicCard(topic, index)).join("")}</div></section></section>`;
+      return;
+    }
     const items = skillActivities.filter((item) => item.skill === skillId);
     const quizItems = items.filter((item) => item.mode === "quiz");
     const challengeItems = items.filter((item) => item.mode === "challenge");
-    app.innerHTML = `<section class="content-page skill-page"><button class="back-link" data-action="university">← University map</button><div class="skill-page-hero"><div><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span class="eyebrow">Skill lab</span><h1>${escapeHtml(skill.title)}</h1><p>${escapeHtml(skill.description)}</p></div>${quizItems.length ? `<button class="primary" data-action="skill-practice" data-skill="${skill.id}">Start ${quizItems.length}-question practice →</button>` : ""}</div><div class="skill-activity-grid">${items.map((item) => `<article class="activity-card"><div class="activity-card-top"><span class="eyebrow">${escapeHtml(item.level || "All levels")}</span><span>${escapeHtml(item.taskType || (item.mode === "challenge" ? "Production challenge" : "Guided practice"))}</span></div><h2>${escapeHtml(item.title || item.prompt)}</h2><p>${escapeHtml(item.prompt)}</p><div class="activity-card-footer">${item.mode === "challenge" ? `<button class="secondary" data-action="challenge" data-activity="${item.id}">Open challenge →</button>` : `<span>Interactive question</span>`}</div></article>`).join("")}</div>${challengeItems.length ? `<div class="callout"><strong>Production matters.</strong><p>Complete the open challenges after the guided questions. Save a note or recording idea so the skill becomes usable, not merely recognisable.</p></div>` : ""}</section>`;
+    app.innerHTML = `<section class="content-page skill-page"><button class="back-link" data-action="university">← University map</button><div class="skill-page-hero"><div><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span class="eyebrow">Skill lab</span><h1>${escapeHtml(skill.title)}</h1><p>${escapeHtml(skill.description)}</p></div>${quizItems.length ? `<button class="primary" data-action="skill-practice" data-skill="${skill.id}">Start ${quizItems.length}-question practice →</button>` : ""}</div><div class="skill-activity-grid">${items.map((item) => `<article class="activity-card"><div class="activity-card-top"><span class="eyebrow">${escapeHtml(item.level || "All levels")}</span><span>${escapeHtml(item.taskType || (item.mode === "challenge" ? "Production challenge" : "Guided practice"))}</span><button class="favorite-button ${isFavorite(item.id) ? "is-favorite" : ""}" data-action="favorite" data-item="${item.id}" aria-label="${isFavorite(item.id) ? "Remove from favorites" : "Add to favorites"}">${isFavorite(item.id) ? "★" : "☆"}</button></div><h2>${escapeHtml(item.title || item.prompt)}</h2><p>${escapeHtml(item.prompt)}</p><div class="activity-card-footer">${item.mode === "challenge" ? `<button class="secondary" data-action="challenge" data-activity="${item.id}">Open challenge →</button>` : `<span>Interactive question</span>`}</div></article>`).join("")}</div>${challengeItems.length ? `<div class="callout"><strong>Production matters.</strong><p>Complete the open challenges after the guided questions. Save a note or recording idea so the skill becomes usable, not merely recognisable.</p></div>` : ""}</section>`;
   }
 
   function renderProjects() {
@@ -155,7 +200,7 @@
     const saved = progress[`note:${item.id}`]?.text || "";
     const skill = item.skill ? skillById(item.skill) : null;
     const speechText = item.transcript || item.prompt || item.description || "English Lab practice";
-    app.innerHTML = `<section class="content-page challenge-page"><button class="back-link" data-action="${skill ? "skill" : "projects"}" data-skill="${skill?.id || ""}">← Back to ${skill ? escapeHtml(skill.title) : "projects"}</button><div class="page-heading"><span class="eyebrow">${escapeHtml(item.level || "Integrated project")}</span><h1>${escapeHtml(item.title || "Project brief")}</h1><p>${escapeHtml(item.prompt || item.description)}</p></div><div class="challenge-layout"><article class="challenge-panel"><span class="eyebrow">Preparation</span><ol>${(item.preparation || ["Read the prompt carefully.", "Plan before producing your answer.", "Review your work after completing it."]).map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>${item.transcript ? `<div class="transcript-box"><span class="eyebrow">Listening text</span><p>${escapeHtml(item.transcript)}</p></div>` : ""}<div class="challenge-actions"><button class="secondary" data-action="speak" data-speech="${escapeHtml(speechText)}">▶ Play model text</button>${item.transcript ? `<button class="text-button" data-action="toggle-transcript">Show / hide transcript</button>` : ""}</div></article><aside class="challenge-panel checklist-panel"><span class="eyebrow">Self-review checklist</span><ul>${(item.checklist || ["Content completed", "Meaning is clear", "Grammar checked", "Vocabulary is precise"]).map((check) => `<li><label><input type="checkbox"> ${escapeHtml(check)}</label></li>`).join("")}</ul><label class="eyebrow" for="challenge-note">Reflection note</label><textarea id="challenge-note" placeholder="What did you do well? What will you improve next time?">${escapeHtml(saved)}</textarea><button class="primary" data-action="save-note" data-activity="${item.id}">Save reflection</button><span class="copy-status" aria-live="polite"></span></aside></div><div class="model-note"><span class="eyebrow">Model guidance</span><p>${escapeHtml(item.sample || "Finish your own work before comparing it with a model or asking for feedback.")}</p></div></section>`;
+    app.innerHTML = `<section class="content-page challenge-page"><button class="back-link" data-action="${skill ? "skill" : "projects"}" data-skill="${skill?.id || ""}">← Back to ${skill ? escapeHtml(skill.title) : "projects"}</button><div class="page-heading"><span class="eyebrow">${escapeHtml(item.level || "Integrated project")}</span><h1>${escapeHtml(item.title || "Project brief")}</h1><p>${escapeHtml(item.prompt || item.description)}</p><button class="favorite-button challenge-favorite ${isFavorite(item.id) ? "is-favorite" : ""}" data-action="favorite" data-item="${item.id}">${isFavorite(item.id) ? "★ Saved" : "☆ Save challenge"}</button></div><div class="challenge-layout"><article class="challenge-panel"><span class="eyebrow">Preparation</span><ol>${(item.preparation || ["Read the prompt carefully.", "Plan before producing your answer.", "Review your work after completing it."]).map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>${item.transcript ? `<div class="transcript-box"><span class="eyebrow">Listening text</span><p>${escapeHtml(item.transcript)}</p></div>` : ""}<div class="challenge-actions"><button class="secondary" data-action="speak" data-speech="${escapeHtml(speechText)}">▶ Play model text</button>${item.transcript ? `<button class="text-button" data-action="toggle-transcript">Show / hide transcript</button>` : ""}</div></article><aside class="challenge-panel checklist-panel"><span class="eyebrow">Self-review checklist</span><ul>${(item.checklist || ["Content completed", "Meaning is clear", "Grammar checked", "Vocabulary is precise"]).map((check) => `<li><label><input type="checkbox"> ${escapeHtml(check)}</label></li>`).join("")}</ul><label class="eyebrow" for="challenge-note">Reflection note</label><textarea id="challenge-note" placeholder="What did you do well? What will you improve next time?">${escapeHtml(saved)}</textarea><button class="primary" data-action="save-note" data-activity="${item.id}">Save reflection</button><span class="copy-status" aria-live="polite"></span></aside></div><div class="model-note"><span class="eyebrow">Model guidance</span><p>${escapeHtml(item.sample || "Finish your own work before comparing it with a model or asking for feedback.")}</p></div></section>`;
   }
 
   function renderDiagnostic() {
@@ -214,8 +259,9 @@
     if (kind === "skill") { items = skillActivities.filter((item) => item.skill === topicId && item.mode === "quiz"); title = `${skillById(topicId)?.title || "Skill"} practice`; }
     if (kind === "diagnostic") { items = university.diagnostic || []; title = "B1+ → C1 diagnostic"; }
     if (kind === "review") { items = reviewDue(); title = "Spaced review queue"; }
+    if (kind === "level-exam") { const exam = university.levelExams?.find((item) => item.level === topicId); items = exam?.questions || []; title = exam?.title || "Level exam"; }
     if (kind === "mistakes") { items = mistakes(); title = "Mistake review"; }
-    session = { kind, topicId, title, items: kind === "partial1" || kind === "partial2" || kind === "quick" || kind === "diagnostic" ? items : shuffle(items) };
+    session = { kind, topicId, title, items: kind === "partial1" || kind === "partial2" || kind === "quick" || kind === "diagnostic" || kind === "level-exam" ? items : shuffle(items) };
     current = 0; selected = null; typedAnswer = ""; answered = false; sessionCorrect = 0; sessionDone = false;
     view = "session"; closeMenu(); render();
   }
@@ -230,7 +276,7 @@
     const topic = topicById(exercise.topic);
     const progressWidth = ((current + (answered ? 1 : 0)) / session.items.length) * 100;
     const correct = answered && isCorrectAnswer(exercise);
-    app.innerHTML = `<section class="practice-page"><div class="quiz-layout"><aside class="quiz-sidebar"><button class="back-link" data-action="exit-session">← Exit session</button><span class="eyebrow">${session.kind === "partial1" ? "All nine Partial 1 units" : session.kind === "partial2" ? "All seven Partial 2 units" : session.kind === "diagnostic" ? "Six level signals" : escapeHtml(topic.title)}</span><h2>${escapeHtml(session.title)}</h2><div class="session-stat"><span>Progress</span><strong>${current + 1} / ${session.items.length}</strong></div><div class="progress-track"><span style="width:${progressWidth}%"></span></div><div class="session-stat"><span>Correct</span><strong>${sessionCorrect}</strong></div><p class="sidebar-tip"><strong>Strategy:</strong> identify the context before choosing the grammar form.</p></aside>
+    app.innerHTML = `<section class="practice-page"><div class="quiz-layout"><aside class="quiz-sidebar"><button class="back-link" data-action="exit-session">← Exit session</button><span class="eyebrow">${session.kind === "partial1" ? "All nine Partial 1 units" : session.kind === "partial2" ? "All seven Partial 2 units" : session.kind === "diagnostic" ? "Six level signals" : session.kind === "level-exam" ? "Level checkpoint" : escapeHtml(topic.title)}</span><h2>${escapeHtml(session.title)}</h2><div class="session-stat"><span>Progress</span><strong>${current + 1} / ${session.items.length}</strong></div><div class="progress-track"><span style="width:${progressWidth}%"></span></div><div class="session-stat"><span>Correct</span><strong>${sessionCorrect}</strong></div><p class="sidebar-tip"><strong>Strategy:</strong> identify the context before choosing the grammar form.</p></aside>
       <article class="question-card ${exercise.passage ? "reading-question" : ""}"><div class="question-meta"><span class="topic-pill">${escapeHtml(topic.icon)} ${escapeHtml(topic.title)}</span><span>${escapeHtml(exercise.taskType || (exercise.type === "text" ? "Written answer" : "Multiple choice"))}</span></div>
       ${exercise.passage ? `<div class="reading-box"><span>Reading task</span><h3>${escapeHtml(exercise.passageTitle)}</h3><p>${escapeHtml(exercise.passage)}</p></div>` : ""}<p class="instruction">${escapeHtml(exercise.instruction)}</p><h2>${escapeHtml(exercise.prompt)}</h2>
       ${exercise.type === "choice" ? renderOptions(exercise) : `<div class="written-answer"><label for="written-input">Your answer</label><input id="written-input" type="text" autocomplete="off" spellcheck="false" value="${escapeHtml(typedAnswer)}" ${answered ? "disabled" : ""}><small>Capitalisation and final punctuation are ignored.</small></div>`}
@@ -260,6 +306,12 @@
       return `<div><span>${escapeHtml(topic.title)}</span><strong>${correctItems} / ${topicItems.length}</strong></div>`;
     }).join("");
     const diagnosticLevel = session.kind === "diagnostic" ? score >= 84 ? "C1 starting signal" : score >= 67 ? "B2+ starting signal" : score >= 50 ? "B2 starting signal" : "B1+ starting signal" : "";
+    if (!session.resultSaved) {
+      meta.results = [{ at: new Date().toISOString(), kind: session.kind, title: session.title, score, correct: sessionCorrect, total: session.items.length }, ...(meta.results || [])].slice(0, 30);
+      if (session.kind === "diagnostic") meta.levelEstimate = diagnosticLevel;
+      saveMeta();
+      session.resultSaved = true;
+    }
     app.innerHTML = `<section class="practice-page"><div class="results-card wide-results"><span class="eyebrow">Session completed</span><div class="result-score">${score}<sup>%</sup></div><h2>${session.kind === "diagnostic" ? diagnosticLevel : score >= 80 ? "Strong performance" : score >= 65 ? "Good progress" : "Keep practising"}</h2><p>You answered <strong>${sessionCorrect}</strong> of <strong>${session.items.length}</strong> questions correctly.</p>${session.kind === "diagnostic" ? `<div class="diagnostic-result"><strong>This is a starting estimate, not a permanent label.</strong><span>Open the recommended skill labs, produce something and repeat the diagnostic after a study cycle.</span></div>` : ""}<div class="result-breakdown">${breakdown}</div><div class="result-actions">${mistakes().length ? '<button class="primary" data-action="review-mistakes">Review mistakes</button>' : ""}${reviewDue().length ? '<button class="secondary" data-action="review-due">Review due</button>' : ""}<button class="secondary" data-action="repeat-session">Try again</button><button class="text-button" data-action="home">Back to topics</button></div></div></section>`;
   }
 
@@ -280,6 +332,7 @@
     if (view === "home") renderHome();
     else if (view === "university") renderUniversity();
     else if (view === "level") renderLevel(activeSkill);
+    else if (view === "module") renderModule(activeModule);
     else if (view === "skill") renderSkillPage(activeSkill);
     else if (view === "projects") renderProjects();
     else if (view === "challenge") renderChallenge(activeChallenge);
@@ -294,6 +347,7 @@
     view = nextView;
     if (nextView === "topic") activeTopic = topicId || activeTopic;
     if (nextView === "skill" || nextView === "level") activeSkill = topicId || activeSkill;
+    if (nextView === "module") activeModule = topicId || activeModule;
     if (nextView === "challenge") activeChallenge = topicId || activeChallenge;
     session = nextView === "session" ? session : null; closeMenu(); render();
     window.scrollTo({ top: 0, behavior: "smooth" }); app.focus({ preventScroll: true });
@@ -333,9 +387,13 @@
     if (action === "university") { navigate("university"); return; }
     if (action === "skills") { navigate("university"); return; }
     if (action === "level") { navigate("level", control.dataset.level); return; }
+    if (action === "module") { navigate("module", control.dataset.module); return; }
+    if (action === "level-exam") { startSession("level-exam", control.dataset.level); return; }
+    if (action === "module-lesson") { const lesson = document.querySelector(`[data-lesson="${control.dataset.lesson}"]`); control.textContent = "Lesson completed ✓"; control.disabled = true; control.classList.add("lesson-complete"); progress[`lesson:${control.dataset.lesson}`] = { completedAt: new Date().toISOString() }; saveProgress(); return; }
     if (action === "skill") { navigate("skill", control.dataset.skill); return; }
     if (action === "projects") { navigate("projects"); return; }
     if (action === "challenge") { navigate("challenge", control.dataset.activity); return; }
+    if (action === "favorite") { toggleFavorite(control.dataset.item); render(); return; }
     if (action === "skill-practice") { startSession("skill", control.dataset.skill); return; }
     if (action === "diagnostic") { navigate("diagnostic"); return; }
     if (action === "start-diagnostic") { startSession("diagnostic"); return; }
@@ -351,10 +409,11 @@
     if (action === "partial-2-test") { startSession("partial2"); return; }
     if (action === "mistakes") { navigate("mistakes"); return; }
     if (action === "review-mistakes") { startSession("mistakes"); return; }
-    if (action === "exit-session") { if (session?.kind === "skill") navigate("skill", session.topicId); else if (session?.kind === "diagnostic") navigate("diagnostic"); else session?.topicId ? navigate("topic", session.topicId) : navigate("home"); return; }
+    if (action === "exit-session") { if (session?.kind === "skill") navigate("skill", session.topicId); else if (session?.kind === "diagnostic") navigate("diagnostic"); else if (session?.kind === "level-exam") navigate("level", session.topicId); else session?.topicId ? navigate("topic", session.topicId) : navigate("home"); return; }
     if (action === "copy-prompt") { copyPrompt(control); return; }
     if (action === "submit" && !answered) {
       const exercise = session.items[current]; const correct = isCorrectAnswer(exercise);
+      recordStudyDay();
       const old = progress[exercise.id] || { attempts: 0, correct: 0 };
       const errorType = correct ? null : exercise.passage ? "context reading" : exercise.type === "text" ? "written production" : "form or meaning choice";
       const intervalDays = correct ? Math.min(30, old.intervalDays ? old.intervalDays * 2 : 1) : 0;
@@ -365,7 +424,7 @@
     }
     if (action === "next") { if (current === session.items.length - 1) sessionDone = true; else { current += 1; selected = null; typedAnswer = ""; answered = false; } render(); return; }
     if (action === "repeat-session") { startSession(session.kind, session.topicId); return; }
-    if (action === "reset" && window.confirm("Delete all saved progress and mistakes?")) { progress = {}; saveProgress(); render(); }
+    if (action === "reset" && window.confirm("Delete all saved progress, favorites and study history?")) { progress = {}; meta = { favorites: [], results: [], streak: 0, lastStudyDate: null, levelEstimate: null }; saveProgress(); saveMeta(); render(); }
   });
 
   const params = new URLSearchParams(window.location.search);

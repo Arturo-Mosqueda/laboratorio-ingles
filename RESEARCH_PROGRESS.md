@@ -84,6 +84,39 @@ This file is updated throughout implementation so decisions and completed work r
 - Production page title verified as `English Lab · B2 Grammar`.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
 
+## Personal English University — Phase 2 — 2026-08-09
+
+### Content expansion
+
+- Added five lesson stages to every one of the 22 modules: understand, notice, control, independent use and stretch challenge.
+- Added four areas named in the long-term objective: Fluency Training, English Thinking, Academic English and Professional English.
+- Expanded the starter bank from 23 to 89 activities: 45 guided quizzes and 44 open production challenges.
+- Added original activities covering collocations, word families, register, idioms, reading tone and inference, listening attitude and implication, writing genres, speaking simulations, minimal pairs, word stress, weak forms, Use of English transformations, critical evidence, timed fluency, circumlocution, academic source use and workplace negotiation.
+- Added level checkpoints with 11 B1+, 13 B2, 9 B2+ and 12 C1 guided questions plus production routes.
+- Added a dedicated Grammar skill page that links to the original 16 topics and 244-question core.
+
+### Phase 2 QA
+
+- Syntax and data validation passed with 22 modules, 110 module lessons, 13 skills, 89 activities, 45 quizzes, 44 challenges, four level exams and the unchanged 244-question grammar core.
+- Browser QA confirmed the University dashboard, 13 skill cards, level navigation, five-lesson module pages, an 11-question B1+ checkpoint, the 16-topic Grammar route and the 390 px layout without overflow.
+- Browser QA recorded no JavaScript errors.
+
+## Personal English University — Phase 3 — 2026-08-09
+
+### Learner tracking
+
+- Added five-stage lesson completion controls to module pages.
+- Added a guided checkpoint session for each level: 11 B1+, 13 B2, 9 B2+ and 12 C1 questions.
+- Added local favorites for starter activities and project briefs.
+- Added a local study streak, result history and saved diagnostic estimate.
+- Added spaced-review dates with expanding intervals for correct answers and immediate return for incorrect answers.
+- Added error categories and short answer history to each attempted question.
+
+### Phase 3 QA
+
+- Browser QA confirmed 13 skill cards, the Grammar card showing all 244 core questions, five module lessons, lesson completion, an 11-question level checkpoint, favorites, the 16-topic Grammar route and no 390 px horizontal overflow.
+- Browser QA recorded no JavaScript errors.
+
 ## Expansion research — 2026-07-18
 
 ### Requested scope
