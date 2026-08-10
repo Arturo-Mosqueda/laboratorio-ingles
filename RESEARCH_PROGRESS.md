@@ -410,9 +410,9 @@ The objective explicitly requires hundreds of opportunities across the skills, n
 
 ### Coverage evidence
 
-- University activities: 1,953 total (1,237 quizzes and 716 production challenges).
-- Skill counts: Grammar 335, Vocabulary 255, Reading 129, Writing 165, Listening 130, Speaking 164, Pronunciation 129, Use of English 115, Critical Thinking 119, Fluency 108, English Thinking 102, Academic English 100 and Professional English 102.
-- All 1,953 activities have unique IDs, a level, a skill and a module assignment.
+- University activities: 1,963 total (1,247 quizzes and 716 production challenges).
+- Skill counts: Grammar 345, Vocabulary 255, Reading 129, Writing 165, Listening 130, Speaking 164, Pronunciation 129, Use of English 115, Critical Thinking 119, Fluency 108, English Thinking 102, Academic English 100 and Professional English 102.
+- All 1,963 activities have unique IDs, a level, a skill and a module assignment.
 - The course retains 16 core grammar topics and 244 core exercises.
 
 ## Personal English University — Phase 9 — 2026-08-09
@@ -435,7 +435,7 @@ The objective explicitly requires hundreds of opportunities across the skills, n
 ### QA evidence before publication
 
 - JavaScript syntax checks passed for `app.js`, `university-practice.js` and `university-depth.js`.
-- Data validation passed: 1,953 unique activities, no invalid quiz indexes, no missing challenge checklists, no missing module assignments, 48 diagnostic questions and 22 module tests.
+- Data validation passed: 1,963 unique activities, no invalid quiz indexes, no missing challenge checklists, no missing module assignments, 48 diagnostic questions and 22 module tests.
 - Headless Chrome smoke rendering confirmed the Personal English University home, search box, progress dashboard, four levels and all skill counts without a runtime rendering failure.
 - The no-future-perfect rule remains satisfied in the new expansion layers.
 
