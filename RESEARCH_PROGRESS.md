@@ -126,7 +126,8 @@ Sources retained for the assessment rationale:
 - Chrome headless route checks passed for Technical English, the B2+ technical module, a technical lesson, a Grammar Studio, an integrated C1 unit, a C1 project, delayed writing feedback and the personal word bank.
 - Desktop and 500-pixel narrow renders were visually reviewed. Chrome on Windows enforces a minimum internal headless layout width near 500 pixels; a 390-pixel screenshot crops that larger layout and is therefore not used as evidence of browser overflow.
 - Learner-facing HTML and JavaScript contain no Future Perfect course content.
-- GitHub Pages deployment is still pending for this expanded build.
+- Deployment commit `3ca5831` reached `main`; GitHub Pages workflow run `31364230750` completed successfully.
+- Production HTTP checks returned 200 for the index and all new course layers. Public Chrome renders passed for Technical English, the C1 integrated unit and the preserved Present Tenses route.
 
 ## Roadmap follow-up — B1+ perfect continuous — 2026-08-09
 

@@ -238,4 +238,7 @@ The page also links the level’s portfolio project. Reading and listening secti
 - Learner-facing HTML and JavaScript contain no Future Perfect unit.
 - Chrome headless route tests passed for levels, modules, lessons, Grammar Studios, Technical English, integrated units, projects, writing and the word bank.
 - Desktop and narrow responsive screenshots were reviewed; the established visual system remains unchanged in character.
-- Production deployment and live GitHub Pages verification remain the final publication gate.
+- Implementation commit `3ca5831` was pushed to `main`.
+- GitHub Pages workflow run `31364230750` completed successfully.
+- The public index, `technical-english.js`, `course-lessons.js` and `app.js` returned HTTP 200 with the expected release markers.
+- Public Chrome rendering passed for Technical English, the C1 orbital-debris unit and the preserved Present Tenses route.

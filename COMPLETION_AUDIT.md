@@ -6,7 +6,7 @@ This is a requirement-by-requirement audit of the local repository against the f
 
 ## Current audit decision
 
-The local implementation satisfies the content, architecture and interaction requirements listed below. Structural validation and critical-route rendering pass. The build is **not yet considered fully delivered** because the expanded files have not yet been committed, pushed and verified on the public GitHub Pages URL.
+The implementation satisfies the content, architecture, interaction and publication requirements listed below. Structural validation, critical-route rendering and public production verification pass.
 
 ## Verified snapshot
 
@@ -64,7 +64,7 @@ All 2,886 University activity IDs are unique. Every activity has a valid level, 
 | English-first learning | Learner explanations, instructions, feedback, models and tasks are in English; no translation dependency is introduced | Satisfied |
 | Navigation and visual system | University sidebar, breadcrumbs, search, previous/next lesson controls, dark/light mode, cards and integrated HTML/CSS diagrams are present without replacing the established aesthetic | Satisfied |
 | Accessibility and responsive behaviour | Semantic buttons/labels, visible focus styles, live status regions, transcript fallback and responsive layouts exist. Critical routes render at desktop and narrow widths in Chrome | Satisfied for the static browser scope |
-| GitHub Pages publication | Existing production is live, but the expanded local build is uncommitted and not yet deployed | Pending |
+| GitHub Pages publication | Commit `3ca5831` was pushed to `main`; workflow run `31364230750` completed successfully; the public index and new data/application layers returned HTTP 200 and public Chrome routes rendered the expected content | Satisfied |
 
 ## Opportunity evidence by skill
 
@@ -107,10 +107,10 @@ Sources:
 - Chrome headless route rendering: passed for University, levels, Technical English, the technical module, lessons, Grammar Studio, integrated unit, project, writing and word-bank routes.
 - Visual review: desktop University, desktop integrated unit and narrow University views render with the existing design system.
 
-## Final publication gate
+## Publication evidence
 
-1. Inspect the final Git diff and rerun the structural validator.
-2. Commit and push the expanded build to `main`.
-3. Wait for the GitHub Pages workflow to finish successfully.
-4. Verify HTTP 200 and new content on the public URL.
-5. Only then mark the full goal complete.
+- Implementation commit: `3ca5831` (`Build complete Personal English University`).
+- GitHub Pages workflow: `31364230750`, successful.
+- HTTP 200 and release-marker checks: `index.html`, `technical-english.js`, `course-lessons.js` and `app.js`.
+- Public Chrome rendering: Technical English route, C1 orbital-debris integrated unit and the preserved Present Tenses route all passed.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
