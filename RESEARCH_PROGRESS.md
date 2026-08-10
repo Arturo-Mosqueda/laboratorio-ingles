@@ -101,6 +101,22 @@ This file is updated throughout implementation so decisions and completed work r
 - Browser QA confirmed the University dashboard, 13 skill cards, level navigation, five-lesson module pages, an 11-question B1+ checkpoint, the 16-topic Grammar route and the 390 px layout without overflow.
 - Browser QA recorded no JavaScript errors.
 
+## Personal English University — Phase 4 — 2026-08-09
+
+### Reference libraries
+
+- Added `catalogs.js` as a separate, expandable content layer.
+- Added 55 grammar roadmap entries across B1+, B2 and C1, including present/past/future foundations, modality, passives, clauses, inversion, clefts, hedging, nominalisation, discourse grammar, register and complex sentence construction.
+- Added 22 vocabulary domains: education, technology, health, relationships, travel, everyday life, science, environment, society, culture, media, work, politics, economics, business, psychology, crime/law, AI, engineering, space, climate and finance.
+- Added eight original reading texts, ten writing genre briefs, ten speaking simulations, eight listening texts and eight pronunciation syllabus units.
+- Connected grammar and skill labs to the catalogues while preserving the interactive activity banks.
+
+### Phase 4 QA
+
+- Data checks confirmed 55 grammar entries, 22 vocabulary domains, 8 readings, 10 writing briefs, 10 speaking simulations, 8 listening texts, 8 pronunciation units and the unchanged 16-topic/244-question core.
+- Browser QA confirmed 55 grammar cards, 22 vocabulary cards, 8 reading cards with expandable text, 10 speaking cards with model-play controls and no 390 px horizontal overflow.
+- Browser QA recorded no JavaScript errors.
+
 ## Personal English University — Phase 3 — 2026-08-09
 
 ### Learner tracking

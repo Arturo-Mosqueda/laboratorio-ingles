@@ -126,3 +126,10 @@ Phase 1 includes 22 curriculum modules, nine skill labs, 23 starter activities, 
 - Added local favorites for activities and projects.
 - Added a study streak, result history and diagnostic level estimate to `localStorage`.
 - Added interval-based review dates: correct answers return after expanding intervals, while incorrect answers return immediately with an error category.
+
+### Phase 4 reference libraries
+
+- Added a 55-entry B1+–C1 grammar roadmap covering the required core, advanced and C1 structures.
+- Added 22 vocabulary domains with collocations, synonyms and register prompts.
+- Added eight original reading texts, ten writing genre briefs, ten speaking simulations, eight listening texts and eight pronunciation units.
+- Connected the libraries to the skill labs with expandable readings and browser-playable model text.
