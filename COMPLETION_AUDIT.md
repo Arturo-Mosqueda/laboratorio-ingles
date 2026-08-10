@@ -64,7 +64,7 @@ All 2,886 University activity IDs are unique. Every activity has a valid level, 
 | English-first learning | Learner explanations, instructions, feedback, models and tasks are in English; no translation dependency is introduced | Satisfied |
 | Navigation and visual system | University sidebar, breadcrumbs, search, previous/next lesson controls, dark/light mode, cards and integrated HTML/CSS diagrams are present without replacing the established aesthetic | Satisfied |
 | Accessibility and responsive behaviour | Semantic buttons/labels, visible focus styles, live status regions, transcript fallback and responsive layouts exist. Critical routes render at desktop and narrow widths in Chrome | Satisfied for the static browser scope |
-| GitHub Pages publication | Commit `3ca5831` was pushed to `main`; workflow run `31364230750` completed successfully; the public index and new data/application layers returned HTTP 200 and public Chrome routes rendered the expected content | Satisfied |
+| GitHub Pages publication | Completion commit `3ca5831` and quality-review commit `7f5b257` were pushed to `main`; latest workflow run `31366866106` completed successfully; the public index, application and writing-model layers returned HTTP 200 and public Chrome routes rendered the expected release | Satisfied |
 
 ## Opportunity evidence by skill
 
@@ -117,6 +117,7 @@ Sources:
 - Browser interaction verified draft/checklist persistence and production completion with `correct: 0`.
 - Comprehensive Chrome smoke testing passed for 57 direct routes with zero runtime exceptions and a maximum of 24 rendered activity cards.
 - Tablet overflow corrections passed at 747 pixels; representative mobile routes passed at a true 390-pixel viewport with no horizontal overflow.
+- Quality-review deployment `7f5b257` completed through GitHub Pages workflow `31366866106`; public resource and Chrome marker checks passed.
 
 ## Publication evidence
 

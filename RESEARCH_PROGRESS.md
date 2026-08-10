@@ -116,6 +116,14 @@ This file is updated throughout implementation so decisions and completed work r
 - Fifty-seven direct routes passed with zero runtime exceptions and no horizontal overflow at the test viewport.
 - True 390-pixel emulation passed for home, University, Vocabulary and Writing; each route had `clientWidth = scrollWidth = 390`.
 
+### Phase 13 deployment
+
+- Implementation commit: `7f5b257` (`Perfect English Lab learning workflows`).
+- GitHub Pages workflow run `31366866106` completed successfully.
+- Public index, application and writing-model resources returned HTTP 200 with every Phase 13 release marker.
+- Public Chrome rendering confirmed the 24-of-711 Vocabulary library summary, smart-session button, Writing production workspace, locked model and normalised word-limit metadata.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
+
 ## Deep-course completion research — 2026-08-10
 
 ### Research decisions

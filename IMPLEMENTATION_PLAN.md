@@ -277,3 +277,6 @@ The final review identified four structural weaknesses in an otherwise complete 
 - Writing interaction test: model and completion begin locked; a 90-word draft plus eight checks unlocks both; completion persists draft, checks and production evidence with `correct: 0`.
 - Browser route test: 57 routes passed with no runtime exception, missing heading, horizontal overflow or skill page above 24 activity cards.
 - Responsive test: home, University, Vocabulary and Writing passed at a true 390-pixel viewport with no horizontal overflow and a visible menu control.
+- Phase 13 implementation commit `7f5b257` was pushed to `main`; GitHub Pages workflow `31366866106` completed successfully.
+- The public index, `app.js` and `writing-models.js` returned HTTP 200 and contained the smart-session, filter, production-workspace, gated-completion and complete-writing-brief release markers.
+- Public Chrome rendering confirmed the 24-of-711 Vocabulary summary, smart-session control, writing workspace, locked model and normalised 100–120-word legacy email brief.
