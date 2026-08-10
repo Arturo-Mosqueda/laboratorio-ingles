@@ -378,6 +378,10 @@ The level checkpoint previously measured only guided selected-response questions
 - Headless render smoke test produced five integrated assessment cards and opened a B1+ Reading section with the expected level-filtered session title.
 - Per-level coverage check found Reading 3–5, Listening 3–4, Writing 2–5 and Speaking 2–5 activities, so every level has all five assessment sections.
 
-### Pending publication
+### Deployment verification
 
-The integrated route is ready to commit and publish. After the GitHub Pages workflow completes, the public URL will be checked again for HTTP 200 and the cache-busted JavaScript resources.
+- Implementation commit: `3f809ab`.
+- GitHub Pages workflow run `31356943557` completed successfully.
+- Public page returned HTTP 200.
+- Cache-busted production `app.js` contains `integrated-exam`, `skill-level` and the five-section assessment copy.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
