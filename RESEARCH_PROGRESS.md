@@ -116,6 +116,13 @@ This file is updated throughout implementation so decisions and completed work r
 - Browser QA confirmed a writing brief displays its metadata, hides model guidance initially, reveals it on demand and has no 390 px overflow.
 - Browser QA recorded no JavaScript errors.
 
+### Phase 6 deployment
+
+- Implementation commit: `e390510`.
+- GitHub Pages workflow run `31356515999` completed successfully.
+- Production returned HTTP 200; deployed `app.js` includes the writing metadata and gated model-guidance flow.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
+
 ### Phase 5 deployment
 
 - Implementation commit: `e59d188`.
