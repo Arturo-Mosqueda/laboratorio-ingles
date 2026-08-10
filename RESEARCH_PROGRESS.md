@@ -431,3 +431,11 @@ The objective explicitly requires hundreds of opportunities across the skills, n
 - Data validation passed: 1,945 unique activities, no invalid quiz indexes, no missing challenge checklists, no missing module assignments, 48 diagnostic questions and 22 module tests.
 - Headless Chrome smoke rendering confirmed the Personal English University home, search box, progress dashboard, four levels and all skill counts without a runtime rendering failure.
 - The no-future-perfect rule remains satisfied in the new expansion layers.
+
+### Phase 9 deployment
+
+- Implementation commit: `ab37f87`.
+- GitHub Pages workflow run `31358500647` completed successfully.
+- Public page returned HTTP 200.
+- Cache-busted production checks confirmed `university-depth.js`, the University search/theme code in `app.js`, and the updated Personal English University title in `index.html`.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
