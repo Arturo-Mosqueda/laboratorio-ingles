@@ -130,6 +130,7 @@ main { flex: 1; }
 
 .results-card, .empty-state { max-width: 650px; margin: 45px auto; text-align: center; padding: 50px; background: white; border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); }
 .diagnostic-result { display: grid; gap: 5px; margin: 19px 0; padding: 15px 17px; border-radius: 11px; background: #edf7f2; color: #3f5a52; font-size: 12px; line-height: 1.5; }.diagnostic-result strong { color: var(--green-dark); }
+.production-route { margin: 22px 0; padding: 18px; border-radius: 12px; background: #f3efe3; text-align: left; }.production-route p { margin: 8px 0 13px; color: #625e51; font-size: 12px; line-height: 1.5; }.production-route > div { display: flex; flex-wrap: wrap; gap: 8px; }.production-route .secondary { min-height: 38px; padding: 0 11px; font-size: 11px; }
 .result-score { margin: 22px 0 3px; font-family: Georgia, serif; color: var(--green); font-size: 76px; line-height: 1; }.result-score sup { font-size: 30px; }
 .results-card h2, .empty-state h2 { font-family: Georgia, serif; font-weight: 500; font-size: 32px; margin: 14px 0 8px; }
 .results-card > p, .empty-state p { color: var(--muted); line-height: 1.6; }.result-actions { justify-content: center; margin-top: 28px; }

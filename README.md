@@ -27,7 +27,7 @@ The University dashboard adds 13 skill labs (including Fluency Training, English
 
 The browser also stores lesson completion, favorites, study streak, result history, diagnostic estimate and spaced-review dates locally.
 
-The reference libraries include 55 grammar roadmap entries, 22 vocabulary domains, 8 readings, 10 writing genres, 10 speaking simulations, 8 listening texts and 8 pronunciation units.
+The reference libraries include 55 grammar roadmap entries, 22 vocabulary domains, 8 readings, 10 writing genres, 10 speaking simulations, 8 listening texts and 8 pronunciation units. Each catalog entry now connects to practice, bringing the University bank to 155 activities (83 quizzes and 72 production challenges) and a 24-question level-balanced diagnostic.
 
 Future perfect is intentionally outside the course scope.
 

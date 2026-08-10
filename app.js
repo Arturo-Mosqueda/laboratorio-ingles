@@ -216,7 +216,7 @@
   }
 
   function renderDiagnostic() {
-    app.innerHTML = `<section class="content-page"><div class="page-heading"><span class="eyebrow">B1+ → C1 diagnostic</span><h1>Find your best starting point.</h1><p>This short diagnostic samples grammar, vocabulary, reading, Use of English and formal register. It is a starting estimate, not a permanent label.</p></div><button class="primary" data-action="start-diagnostic">Start diagnostic →</button><div class="reference-grid diagnostic-grid"><article class="reference-card"><span>Use it once</span><h2>Answer without notes</h2><p>Your first result is more useful when it reflects your current control and intuition.</p></article><article class="reference-card"><span>Read the feedback</span><h2>Look for patterns</h2><p>Each answer explains the decision and points toward a skill lab.</p></article><article class="reference-card"><span>Revisit later</span><h2>Compare progress</h2><p>Repeat after a study cycle and compare the level signals with your production work.</p></article></div></section>`;
+    app.innerHTML = `<section class="content-page"><div class="page-heading"><span class="eyebrow">B1+ → C1 diagnostic</span><h1>Find your best starting point.</h1><p>This ${university.diagnostic.length}-question diagnostic samples grammar, vocabulary, reading, Use of English, formal register and multiple levels. It is a starting estimate, not a permanent label.</p></div><button class="primary" data-action="start-diagnostic">Start diagnostic →</button><div class="reference-grid diagnostic-grid"><article class="reference-card"><span>Use it once</span><h2>Answer without notes</h2><p>Your first result is more useful when it reflects your current control and intuition.</p></article><article class="reference-card"><span>Read the feedback</span><h2>Look for patterns</h2><p>Each answer explains the decision and points toward a skill lab.</p></article><article class="reference-card"><span>Revisit later</span><h2>Compare progress</h2><p>Repeat after a study cycle and compare the level signals with your production work.</p></article></div></section>`;
   }
 
   function renderTopicCard(topic, index) {
@@ -263,6 +263,7 @@
   function startSession(kind, topicId = null) {
     let items = [];
     let title = "Practice";
+    let production = [];
     if (kind === "topic") { items = exercises.filter((item) => item.topic === topicId); title = `${topicById(topicId).title} practice`; }
     if (kind === "quick") { items = exercises.filter((item) => item.topic === topicId && item.quickTest); title = `${topicById(topicId).title} quick test`; }
     if (kind === "all") { items = exercises; title = "All-topic practice"; }
@@ -271,9 +272,9 @@
     if (kind === "skill") { items = skillActivities.filter((item) => item.skill === topicId && item.mode === "quiz"); title = `${skillById(topicId)?.title || "Skill"} practice`; }
     if (kind === "diagnostic") { items = university.diagnostic || []; title = "B1+ → C1 diagnostic"; }
     if (kind === "review") { items = reviewDue(); title = "Spaced review queue"; }
-    if (kind === "level-exam") { const exam = university.levelExams?.find((item) => item.level === topicId); items = exam?.questions || []; title = exam?.title || "Level exam"; }
+    if (kind === "level-exam") { const exam = university.levelExams?.find((item) => item.level === topicId); items = exam?.questions || []; production = exam?.production || []; title = exam?.title || "Level exam"; }
     if (kind === "mistakes") { items = mistakes(); title = "Mistake review"; }
-    session = { kind, topicId, title, items: kind === "partial1" || kind === "partial2" || kind === "quick" || kind === "diagnostic" || kind === "level-exam" ? items : shuffle(items) };
+    session = { kind, topicId, title, production, items: kind === "partial1" || kind === "partial2" || kind === "quick" || kind === "diagnostic" || kind === "level-exam" ? items : shuffle(items) };
     current = 0; selected = null; typedAnswer = ""; answered = false; sessionCorrect = 0; sessionDone = false;
     view = "session"; closeMenu(); render();
   }
@@ -288,7 +289,7 @@
     const topic = topicById(exercise.topic);
     const progressWidth = ((current + (answered ? 1 : 0)) / session.items.length) * 100;
     const correct = answered && isCorrectAnswer(exercise);
-    app.innerHTML = `<section class="practice-page"><div class="quiz-layout"><aside class="quiz-sidebar"><button class="back-link" data-action="exit-session">← Exit session</button><span class="eyebrow">${session.kind === "partial1" ? "All nine Partial 1 units" : session.kind === "partial2" ? "All seven Partial 2 units" : session.kind === "diagnostic" ? "Six level signals" : session.kind === "level-exam" ? "Level checkpoint" : escapeHtml(topic.title)}</span><h2>${escapeHtml(session.title)}</h2><div class="session-stat"><span>Progress</span><strong>${current + 1} / ${session.items.length}</strong></div><div class="progress-track"><span style="width:${progressWidth}%"></span></div><div class="session-stat"><span>Correct</span><strong>${sessionCorrect}</strong></div><p class="sidebar-tip"><strong>Strategy:</strong> identify the context before choosing the grammar form.</p></aside>
+    app.innerHTML = `<section class="practice-page"><div class="quiz-layout"><aside class="quiz-sidebar"><button class="back-link" data-action="exit-session">← Exit session</button><span class="eyebrow">${session.kind === "partial1" ? "All nine Partial 1 units" : session.kind === "partial2" ? "All seven Partial 2 units" : session.kind === "diagnostic" ? `${university.diagnostic.length} level signals` : session.kind === "level-exam" ? "Level checkpoint" : escapeHtml(topic.title)}</span><h2>${escapeHtml(session.title)}</h2><div class="session-stat"><span>Progress</span><strong>${current + 1} / ${session.items.length}</strong></div><div class="progress-track"><span style="width:${progressWidth}%"></span></div><div class="session-stat"><span>Correct</span><strong>${sessionCorrect}</strong></div><p class="sidebar-tip"><strong>Strategy:</strong> identify the context before choosing the grammar form.</p></aside>
       <article class="question-card ${exercise.passage ? "reading-question" : ""}"><div class="question-meta"><span class="topic-pill">${escapeHtml(topic.icon)} ${escapeHtml(topic.title)}</span><span>${escapeHtml(exercise.taskType || (exercise.type === "text" ? "Written answer" : "Multiple choice"))}</span></div>
       ${exercise.passage ? `<div class="reading-box"><span>Reading task</span><h3>${escapeHtml(exercise.passageTitle)}</h3><p>${escapeHtml(exercise.passage)}</p></div>` : ""}<p class="instruction">${escapeHtml(exercise.instruction)}</p><h2>${escapeHtml(exercise.prompt)}</h2>
       ${exercise.type === "choice" ? renderOptions(exercise) : `<div class="written-answer"><label for="written-input">Your answer</label><input id="written-input" type="text" autocomplete="off" spellcheck="false" value="${escapeHtml(typedAnswer)}" ${answered ? "disabled" : ""}><small>Capitalisation and final punctuation are ignored.</small></div>`}
@@ -318,13 +319,14 @@
       return `<div><span>${escapeHtml(topic.title)}</span><strong>${correctItems} / ${topicItems.length}</strong></div>`;
     }).join("");
     const diagnosticLevel = session.kind === "diagnostic" ? score >= 84 ? "C1 starting signal" : score >= 67 ? "B2+ starting signal" : score >= 50 ? "B2 starting signal" : "B1+ starting signal" : "";
+    const productionRoute = session.kind === "level-exam" && session.production?.length ? `<div class="production-route"><span class="eyebrow">Production route</span><p>Complete these open tasks after the checkpoint. They assess what selected answers cannot show.</p><div>${session.production.map((item) => `<button class="secondary" data-action="challenge" data-activity="${item.id}">${escapeHtml(item.title || item.prompt)}</button>`).join("")}</div></div>` : "";
     if (!session.resultSaved) {
       meta.results = [{ at: new Date().toISOString(), kind: session.kind, title: session.title, score, correct: sessionCorrect, total: session.items.length }, ...(meta.results || [])].slice(0, 30);
       if (session.kind === "diagnostic") meta.levelEstimate = diagnosticLevel;
       saveMeta();
       session.resultSaved = true;
     }
-    app.innerHTML = `<section class="practice-page"><div class="results-card wide-results"><span class="eyebrow">Session completed</span><div class="result-score">${score}<sup>%</sup></div><h2>${session.kind === "diagnostic" ? diagnosticLevel : score >= 80 ? "Strong performance" : score >= 65 ? "Good progress" : "Keep practising"}</h2><p>You answered <strong>${sessionCorrect}</strong> of <strong>${session.items.length}</strong> questions correctly.</p>${session.kind === "diagnostic" ? `<div class="diagnostic-result"><strong>This is a starting estimate, not a permanent label.</strong><span>Open the recommended skill labs, produce something and repeat the diagnostic after a study cycle.</span></div>` : ""}<div class="result-breakdown">${breakdown}</div><div class="result-actions">${mistakes().length ? '<button class="primary" data-action="review-mistakes">Review mistakes</button>' : ""}${reviewDue().length ? '<button class="secondary" data-action="review-due">Review due</button>' : ""}<button class="secondary" data-action="repeat-session">Try again</button><button class="text-button" data-action="home">Back to topics</button></div></div></section>`;
+    app.innerHTML = `<section class="practice-page"><div class="results-card wide-results"><span class="eyebrow">Session completed</span><div class="result-score">${score}<sup>%</sup></div><h2>${session.kind === "diagnostic" ? diagnosticLevel : score >= 80 ? "Strong performance" : score >= 65 ? "Good progress" : "Keep practising"}</h2><p>You answered <strong>${sessionCorrect}</strong> of <strong>${session.items.length}</strong> questions correctly.</p>${session.kind === "diagnostic" ? `<div class="diagnostic-result"><strong>This is a starting estimate, not a permanent label.</strong><span>Open the recommended skill labs, produce something and repeat the diagnostic after a study cycle.</span></div>` : ""}${productionRoute}<div class="result-breakdown">${breakdown}</div><div class="result-actions">${mistakes().length ? '<button class="primary" data-action="review-mistakes">Review mistakes</button>' : ""}${reviewDue().length ? '<button class="secondary" data-action="review-due">Review due</button>' : ""}<button class="secondary" data-action="repeat-session">Try again</button><button class="text-button" data-action="home">Back to topics</button></div></div></section>`;
   }
 
   function renderMistakesPage() {

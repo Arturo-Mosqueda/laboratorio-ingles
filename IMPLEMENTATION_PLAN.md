@@ -133,3 +133,11 @@ Phase 1 includes 22 curriculum modules, nine skill labs, 23 starter activities, 
 - Added 22 vocabulary domains with collocations, synonyms and register prompts.
 - Added eight original reading texts, ten writing genre briefs, ten speaking simulations, eight listening texts and eight pronunciation units.
 - Connected the libraries to the skill labs with expandable readings and browser-playable model text.
+
+### Phase 5 assessment and practice expansion
+
+- Added one catalog-linked practice activity for every vocabulary domain, reading, writing brief, speaking simulation, listening text and pronunciation unit.
+- Expanded the University bank to 155 activities: 83 guided quizzes and 72 production challenges.
+- Expanded the full diagnostic to 24 questions, balanced at six signals per level.
+- Rebuilt level checkpoints after expansion: 21 B1+, 23 B2, 18 B2+ and 21 C1 guided questions, with six production tasks each.
+- Added a production route to level-exam results so each checkpoint leads into open writing, speaking, academic or professional work.

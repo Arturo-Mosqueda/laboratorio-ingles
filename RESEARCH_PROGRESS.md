@@ -84,6 +84,23 @@ This file is updated throughout implementation so decisions and completed work r
 - Production page title verified as `English Lab · B2 Grammar`.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
 
+## Personal English University — Phase 5 — 2026-08-09
+
+### Practice and assessment expansion
+
+- Added `activity-expansion.js` so every vocabulary domain, reading text, writing genre, speaking simulation, listening text and pronunciation unit has a linked practice activity.
+- Expanded the University bank from 89 to 155 activities: 83 guided quizzes and 72 production challenges.
+- Expanded the diagnostic from 6 to 24 questions, with six questions for each of B1+, B2, B2+ and C1.
+- Rebuilt level checkpoints after expansion: 21 B1+, 23 B2, 18 B2+ and 21 C1 guided questions, each followed by six open production tasks.
+- Added a production route to checkpoint results so selected-answer scores are followed by writing, speaking, academic or professional output.
+
+### Phase 5 QA
+
+- Syntax and data checks passed for `activity-expansion.js` and `app.js`.
+- Data validation confirmed 155 activities, 83 quizzes, 72 challenges, 24 balanced diagnostic questions, four checkpoints and the unchanged 16-topic/244-question grammar core.
+- Browser QA confirmed the 24-question diagnostic, the 21-question B1+ checkpoint, 35 Vocabulary activities plus 22 vocabulary catalogue cards and no 390 px overflow.
+- Browser QA recorded no JavaScript errors.
+
 ## Personal English University — Phase 2 — 2026-08-09
 
 ### Content expansion
