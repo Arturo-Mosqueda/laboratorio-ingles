@@ -131,6 +131,35 @@ The page also links the level’s portfolio project. Reading and listening secti
 - The expanded data model remains at 155 University activities (83 quizzes, 72 challenges), 24 diagnostic questions and 244 grammar exercises.
 - The integrated assessment is an additional route; the original grammar topics, partial exams and text-only voice prompts remain intact.
 
+## Personal English University expansion — Phase 8
+
+### Deep practice bank and course routing
+
+- Added `university-practice.js` and `university-depth.js` as separate static data layers so the original grammar files remain stable.
+- Expanded the University bank to 1,945 original activities: 1,229 guided quizzes and 716 production challenges.
+- Added 70 grammar roadmap entries, including a dedicated B2+ grammar layer, and generated form, example, purpose, contrast and context practice for every roadmap entry.
+- Expanded vocabulary through collocation, synonym, word-family, register and contextual-precision tasks.
+- Expanded Reading and Listening with gist, detail, inference, tone, evidence, prediction, attitude, note-taking, transcript and transfer tasks.
+- Expanded Writing, Speaking, Pronunciation, Use of English, Critical Thinking, Fluency, English Thinking, Academic English and Professional English with levelled production or guided variants.
+- Every activity is assigned to a real module; every module now has a connected bank and a checkpoint route.
+
+### Exam structure
+
+- Each level final exam uses a stratified 48-question sample from its larger level pool, so the final is comprehensive without requiring every bank item in one sitting.
+- Each of the 22 modules has a 12-question checkpoint where the bank supports it, or an eight-question checkpoint for production-led modules, plus a production route.
+- The diagnostic now contains 48 questions: twelve signals for each of B1+, B2, B2+ and C1.
+
+## Personal English University expansion — Phase 9
+
+### Learning dashboard and navigation
+
+- Added per-skill and per-level progress cells showing attempted/mastered activity counts and accuracy.
+- Added error-pattern detection and an automatic next-step recommendation based on unresolved error categories.
+- Added University search across grammar topics, skills, modules and activity prompts.
+- Added a local dark/light mode toggle while preserving the existing visual language.
+- Added module-specific practice and checkpoint entry points, level-filtered skill sections and transcript fallback cards for listening quizzes.
+- Added copyable challenge-specific voice prompts for speaking, academic and professional activities without connecting to any external service.
+
 ### Phase 2 content depth
 
 - All 22 modules now expose five lessons: understand, notice, control, use independently and stretch the choice.

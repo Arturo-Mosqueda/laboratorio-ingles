@@ -385,3 +385,49 @@ The level checkpoint previously measured only guided selected-response questions
 - Public page returned HTTP 200.
 - Cache-busted production `app.js` contains `integrated-exam`, `skill-level` and the five-section assessment copy.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
+
+## Personal English University — Phase 8 — 2026-08-09
+
+### Depth requirement audit
+
+The objective explicitly requires hundreds of opportunities across the skills, not only a visually complete dashboard. The 155-activity bank was therefore insufficient. I kept the core 244 grammar exercises and added two independent static expansion layers so the existing data and routes remain recoverable.
+
+### Content expansion
+
+- Added a dedicated B2+ grammar catalog so the progression is not B1+ → B2 → C1 with a missing middle grammar layer.
+- Added contextual variants for every grammar roadmap entry: form recognition, example matching, purpose, context decision and contrast.
+- Added vocabulary practice for collocations, synonyms, word families, register and contextual precision across all 22 domains.
+- Added reading and listening variants for gist, detail, evidence, inference, tone, prediction, attitude, note-taking, transcript use and transfer.
+- Added progressive writing and speaking variants that preserve self-review, word limits, follow-up questions and level-appropriate interaction.
+- Added expanded Use of English, pronunciation, critical-thinking, fluency, English-thinking, academic-English and professional-English banks.
+
+### Coverage evidence
+
+- University activities: 1,945 total (1,229 quizzes and 716 production challenges).
+- Skill counts: Grammar 335, Vocabulary 255, Reading 129, Writing 165, Listening 130, Speaking 164, Pronunciation 129, Use of English 107, Critical Thinking 119, Fluency 108, English Thinking 102, Academic English 100 and Professional English 102.
+- All 1,945 activities have unique IDs, a level, a skill and a module assignment.
+- The course retains 16 core grammar topics and 244 core exercises.
+
+## Personal English University — Phase 9 — 2026-08-09
+
+### Routing and assessment improvements
+
+- Added module-specific practice rows and checkpoint buttons to all 22 module pages.
+- Final level exams now use a stratified 48-question sample while retaining the full level question pool for skill practice.
+- Added module checkpoints and production routes.
+- Expanded the diagnostic to 48 questions, balanced at twelve signals per level.
+
+### Dashboard improvements
+
+- Added per-skill/per-level progress cells and accuracy summaries.
+- Added error-pattern grouping with recommended targeted review.
+- Added a University search field covering topics, skills, modules and activity prompts.
+- Added local dark/light mode support.
+- Added listening transcript fallback inside quiz sessions and copyable challenge-specific voice prompts.
+
+### QA evidence before publication
+
+- JavaScript syntax checks passed for `app.js`, `university-practice.js` and `university-depth.js`.
+- Data validation passed: 1,945 unique activities, no invalid quiz indexes, no missing challenge checklists, no missing module assignments, 48 diagnostic questions and 22 module tests.
+- Headless Chrome smoke rendering confirmed the Personal English University home, search box, progress dashboard, four levels and all skill counts without a runtime rendering failure.
+- The no-future-perfect rule remains satisfied in the new expansion layers.
