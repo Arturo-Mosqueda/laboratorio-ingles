@@ -84,6 +84,14 @@ This file is updated throughout implementation so decisions and completed work r
 - Production page title verified as `English Lab · B2 Grammar`.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
 
+## Roadmap follow-up — B1+ perfect continuous — 2026-08-09
+
+- Added `Present Perfect Continuous` and `Past Perfect Continuous` to the B1+ grammar roadmap so the progression explicitly names every required present and past perfect form.
+- The generated practice bank now includes the same five contextual variants for these roadmap entries.
+- Follow-up commit: `e6379ee`.
+- GitHub Pages workflow run `31358855880` completed successfully.
+- Final production check returned HTTP 200 at https://arturo-mosqueda.github.io/laboratorio-ingles/.
+
 ### Use of English follow-up deployment
 
 - Follow-up commit: `8ef14b6`.
