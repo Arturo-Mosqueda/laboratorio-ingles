@@ -240,3 +240,10 @@ This file is updated throughout implementation so decisions and completed work r
 - Data checks confirmed four levels, 22 modules, nine skills, 23 activities, eight projects, six diagnostic questions, 16 grammar topics and 244 grammar exercises.
 - Browser QA confirmed the University dashboard (4 levels, 9 skills), level navigation, Vocabulary guided practice (3 questions), an open challenge, the diagnostic (6 questions), the existing Present Tenses lesson and a 390 px layout without horizontal overflow.
 - Browser QA recorded no JavaScript errors.
+
+### Phase 1 deployment
+
+- Implementation commit: `87484fe`.
+- GitHub Pages workflow run `31354783263` completed successfully.
+- Production returned HTTP 200; the deployed `curriculum.js` and `app.js` resources returned HTTP 200 and contain the C1 route, University dashboard and spaced-review logic.
+- Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
