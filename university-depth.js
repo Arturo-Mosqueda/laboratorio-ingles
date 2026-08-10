@@ -67,9 +67,11 @@
     ["phrasal", "The team had to ___ the launch because a safety check was incomplete.", ["put off", "put up", "put through", "put out"], 0, "Put off means postpone."],
     ["idiom", "After the first design failed, the engineers returned to the ___.", ["drawing board", "drawing room", "drawing line", "drawing point"], 0, "Return to the drawing board means start planning again."],
     ["register", "Choose the most suitable formal sentence.", ["We regret to inform you that the appointment must be rescheduled.", "Hey, we have to move your thing.", "Your appointment is kinda messed up.", "Yo, the time is off."], 0, "The first option is precise, polite and appropriate for formal correspondence."],
-    ["open-cloze", "The proposal was rejected ___ the evidence did not address the central risk.", ["because", "despite", "unless", "whereas"], 0, "Because introduces the reason for rejection."]
+    ["open-cloze", "The proposal was rejected ___ the evidence did not address the central risk.", ["because", "despite", "unless", "whereas"], 0, "Because introduces the reason for rejection."],
+    ["sentence-completion", "Complete the sentence with the most precise ending: ‘The review recommends that…’", ["the procedure be repeated with a larger sample.", "the procedure repeating to a sample.", "repeat the procedure to be larger.", "the sample has procedure repeat."], 0, "Recommend that can introduce a formal that-clause; the first completion is grammatical and precise."],
+    ["multiple-choice-cloze", "The findings were useful, ___ they could not answer the wider policy question.", ["although", "because of", "unless of", "despite of"], 0, "Although introduces a concession before a clause and completes the multiple-choice cloze naturally."]
   ];
-  university.levels.forEach((level) => useExtra.forEach(([variant, prompt, options, answer, explanation], index) => add(choice(`depth-use-${level.id}-${variant}-${index + 1}`, "use-of-english", level.id, `Use of English ${variant}`, prompt, options, answer, explanation))));
+  university.levels.forEach((level) => useExtra.forEach(([variant, prompt, options, answer, explanation], index) => add(choice(`depth-use-${level.id}-${variant}-${index + 1}`, "use-of-english", level.id, variant === "sentence-completion" ? "Sentence completion" : variant === "multiple-choice-cloze" ? "Multiple-choice cloze" : `Use of English ${variant}`, prompt, options, answer, explanation))));
 
   const writingExtra = [
     ["time-box", "Complete the brief in one focused draft, then spend five minutes revising only the opening and conclusion.", "Time-boxed revision"],

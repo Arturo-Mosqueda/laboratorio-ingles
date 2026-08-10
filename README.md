@@ -23,7 +23,7 @@ The grammar bank is now the B2 core of a larger four-level route:
 - B2+ — Range, nuance and fluency
 - C1 — Advanced, natural and flexible English
 
-The University dashboard adds 13 skill labs (including Fluency Training, English Thinking, Academic English and Professional English), 22 curriculum modules with five lessons each, 1,945 original University activities (1,229 quizzes and 716 production challenges), eight integrated projects, 22 module checkpoints, four 48-question final exams and a 48-question diagnostic balanced at twelve signals per level. Listening and pronunciation activities use the browser SpeechSynthesis API when supported and provide transcript fallbacks.
+The University dashboard adds 13 skill labs (including Fluency Training, English Thinking, Academic English and Professional English), 22 curriculum modules with five lessons each, 1,953 original University activities (1,237 quizzes and 716 production challenges), eight integrated projects, 22 module checkpoints, four 48-question final exams and a 48-question diagnostic balanced at twelve signals per level. Listening and pronunciation activities use the browser SpeechSynthesis API when supported and provide transcript fallbacks.
 
 The browser also stores lesson completion, favorites, study streak, result history, diagnostic estimate and spaced-review dates locally.
 
