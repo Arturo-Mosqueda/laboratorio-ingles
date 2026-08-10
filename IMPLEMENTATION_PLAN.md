@@ -280,3 +280,4 @@ The final review identified four structural weaknesses in an otherwise complete 
 - Phase 13 implementation commit `7f5b257` was pushed to `main`; GitHub Pages workflow `31366866106` completed successfully.
 - The public index, `app.js` and `writing-models.js` returned HTTP 200 and contained the smart-session, filter, production-workspace, gated-completion and complete-writing-brief release markers.
 - Public Chrome rendering confirmed the 24-of-711 Vocabulary summary, smart-session control, writing workspace, locked model and normalised 100–120-word legacy email brief.
+- Reviewed the official GitHub releases after a Node.js 20 deprecation warning and upgraded the Pages workflow to `checkout@v7`, `configure-pages@v6`, `upload-pages-artifact@v5` and `deploy-pages@v5`.

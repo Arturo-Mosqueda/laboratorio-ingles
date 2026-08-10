@@ -122,6 +122,7 @@ This file is updated throughout implementation so decisions and completed work r
 - GitHub Pages workflow run `31366866106` completed successfully.
 - Public index, application and writing-model resources returned HTTP 200 with every Phase 13 release marker.
 - Public Chrome rendering confirmed the 24-of-711 Vocabulary library summary, smart-session button, Writing production workspace, locked model and normalised word-limit metadata.
+- The successful deployment reported a Node.js 20 action-runtime warning. Official GitHub release checks showed `actions/checkout` v7.0.1, `actions/configure-pages` v6.0.0, `actions/upload-pages-artifact` v5.0.0 and `actions/deploy-pages` v5.0.0 as the current releases, so the workflow now uses those supported major versions.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
 
 ## Deep-course completion research — 2026-08-10
