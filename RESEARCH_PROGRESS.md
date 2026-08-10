@@ -213,3 +213,30 @@ This file is updated throughout implementation so decisions and completed work r
 - The public page and the cache-busted `partial1.js` resource both returned HTTP 200.
 - Production content checks found both `Present Tenses` and `Mixed Tenses` in the deployed question bank.
 - Public URL: https://arturo-mosqueda.github.io/laboratorio-ingles/
+
+## Personal English University — Phase 1 — 2026-08-09
+
+### Architecture decision
+
+- Preserve `GrammarLabData` as the stable grammar core: 16 topics and 244 exercises remain available unchanged.
+- Add `EnglishUniversityData` in a separate `curriculum.js` file so levels, modules, skills, projects, diagnostic questions and new activities can grow independently.
+- Keep the static HTML/CSS/JavaScript architecture and browser `localStorage`; no backend was introduced.
+- Extend the existing app shell with University, level, skill, project, challenge and diagnostic views while retaining the current visual language and grammar routes.
+
+### Phase 1 deliverables
+
+- Added four progressive levels: B1+, B2, B2+ and C1.
+- Added 22 modules across the levels.
+- Added nine skill areas: Grammar, Vocabulary, Reading, Writing, Listening, Speaking, Pronunciation, Use of English and Critical Thinking.
+- Added 23 starter activities, including guided multiple-choice practice and open production challenges.
+- Added eight integrated projects.
+- Added a six-question B1+→C1 diagnostic with feedback.
+- Added SpeechSynthesis play controls for model texts and a visible transcript fallback for listening-oriented work.
+- Added reflection notes and checklist controls for writing, speaking, reading, listening and pronunciation challenges, saved locally.
+
+### Phase 1 QA
+
+- JavaScript syntax checks passed for `curriculum.js`, `app.js` and the existing grammar files.
+- Data checks confirmed four levels, 22 modules, nine skills, 23 activities, eight projects, six diagnostic questions, 16 grammar topics and 244 grammar exercises.
+- Browser QA confirmed the University dashboard (4 levels, 9 skills), level navigation, Vocabulary guided practice (3 questions), an open challenge, the diagnostic (6 questions), the existing Present Tenses lesson and a 390 px layout without horizontal overflow.
+- Browser QA recorded no JavaScript errors.

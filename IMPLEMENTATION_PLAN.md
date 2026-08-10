@@ -96,3 +96,16 @@ Keep the existing seven future/determiner units as Partial 2.
 - Separated the assessments into a 45-question Partial 1 exam and a 39-question Partial 2 exam.
 - Preserved the existing interface design while adding separate course-map sections and navigation controls.
 - Kept all explanations, questions, feedback and topic-specific speaking prompts in English.
+
+## Personal English University expansion — Phase 1
+
+The existing grammar course remains the B2 core. A curriculum layer now surrounds it with four progressive levels and nine skill areas:
+
+- B1+: Foundation and control
+- B2: Functional and academic English
+- B2+: Range, nuance and fluency
+- C1: Advanced, natural and flexible English
+
+The new data model lives in `curriculum.js` and keeps levels, modules, skills, activities, projects and diagnostic questions separate from the original `GrammarLabData` bank. This allows new content to grow without changing the 16 current grammar topics or their 244 exercises.
+
+Phase 1 includes 22 curriculum modules, nine skill labs, 23 starter activities, eight integrated projects and a six-question B1+→C1 diagnostic. Vocabulary, reading, Use of English and the receptive/production skills now have their own pages, guided quiz sessions and open-ended challenges. Listening and pronunciation challenges use the browser’s SpeechSynthesis API when available and retain a transcript/model fallback.

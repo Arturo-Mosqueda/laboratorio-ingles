@@ -2,6 +2,8 @@
   "use strict";
 
   const { topics, guides, exercises } = window.GrammarLabData;
+  const university = window.EnglishUniversityData || { levels: [], skills: [], activities: [], projects: [], diagnostic: [] };
+  const skillActivities = university.activities || [];
   const storageKey = "english-lab-progress-v2";
   const app = document.querySelector("#app");
   const nav = document.querySelector("#main-nav");
@@ -9,6 +11,8 @@
 
   let view = "home";
   let activeTopic = null;
+  let activeSkill = null;
+  let activeChallenge = null;
   let progress = loadProgress();
   let session = null;
   let current = 0;
@@ -53,8 +57,17 @@
   }
 
   const percent = (correct, total) => total ? Math.round((correct / total) * 100) : 0;
-  const topicById = (id) => topics.find((topic) => topic.id === id);
-  const mistakes = () => exercises.filter((exercise) => progress[exercise.id] && progress[exercise.id].lastCorrect === false);
+  const skillById = (id) => university.skills.find((skill) => skill.id === id);
+  const activityById = (id) => skillActivities.find((activity) => activity.id === id);
+  const topicById = (id) => topics.find((topic) => topic.id === id) || skillById(id) || (String(id || "").startsWith("skill-") ? skillById(String(id).slice(6)) : null) || {
+    id, title: "Diagnostic", icon: "DI", description: "Level diagnostic", partial: null
+  };
+  const allPracticeItems = [...exercises, ...skillActivities, ...(university.diagnostic || [])];
+  const mistakes = () => allPracticeItems.filter((exercise) => progress[exercise.id] && progress[exercise.id].lastCorrect === false);
+  const reviewDue = () => allPracticeItems.filter((exercise) => {
+    const saved = progress[exercise.id];
+    return saved && (!saved.nextReview || saved.nextReview <= new Date().toISOString());
+  });
 
   function statsFor(items) {
     const attempted = items.filter((item) => progress[item.id]).length;
@@ -64,6 +77,27 @@
       return { attempts: sum.attempts + (saved?.attempts || 0), correct: sum.correct + (saved?.correct || 0) };
     }, { attempts: 0, correct: 0 });
     return { attempted, mastered, accuracy: percent(totals.correct, totals.attempts) };
+  }
+
+  function skillStats(skillId) {
+    return statsFor(skillActivities.filter((item) => item.skill === skillId));
+  }
+
+  function renderLevelCard(level) {
+    const levelModules = level.modules.length;
+    const levelActivities = skillActivities.filter((item) => item.level === level.id).length;
+    const levelTopics = level.id === "b2" ? topics.length : level.id === "b1-plus" ? 0 : 0;
+    return `<article class="level-card"><div class="level-card-top"><span class="level-code">${escapeHtml(level.code)}</span><span>${levelModules} modules</span></div><h3>${escapeHtml(level.title)}</h3><p>${escapeHtml(level.description)}</p><div class="level-card-meta"><span>${levelActivities} starter activities</span><span>${levelTopics ? `${levelTopics} grammar units` : "Curriculum route"}</span></div><button class="card-link" data-action="level" data-level="${level.id}">Explore level →</button></article>`;
+  }
+
+  function renderSkillCard(skill) {
+    const items = skillActivities.filter((item) => item.skill === skill.id);
+    const stats = skillStats(skill.id);
+    return `<article class="skill-card"><div class="skill-card-top"><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span>${items.length} starter activities</span></div><h3>${escapeHtml(skill.title)}</h3><p>${escapeHtml(skill.description)}</p><div class="mini-progress"><span style="width:${items.length ? stats.mastered / items.length * 100 : 0}%"></span></div><div class="skill-card-footer"><span>${stats.mastered} mastered</span><button class="card-link" data-action="skill" data-skill="${skill.id}">Open lab →</button></div></article>`;
+  }
+
+  function renderUniversityOverview() {
+    return `<section class="university-section"><div class="section-heading"><div><span class="eyebrow">Personal English University</span><h2>A route from B1+ to C1</h2></div><p>A long-form curriculum combining grammar, vocabulary, receptive skills, production, pronunciation, Use of English and critical thinking.</p></div><div class="level-roadmap">${university.levels.map(renderLevelCard).join("")}</div><div class="section-heading skill-heading"><div><span class="eyebrow">Skill library</span><h2>Build the whole language system</h2></div><p>Open a skill lab for guided practice, independent challenges and level-specific projects.</p></div><div class="skill-grid">${university.skills.map(renderSkillCard).join("")}</div><div class="project-strip"><div><span class="eyebrow">Integrated projects</span><h3>Learn by making something real</h3><p>Projects connect reading, vocabulary, listening, speaking, writing and reflection.</p></div><button class="secondary" data-action="projects">View project route →</button></div></section>`;
   }
 
   function renderHome() {
@@ -80,6 +114,7 @@
         <aside class="hero-card"><div class="level-ring" style="--score:${overall.mastered / exercises.length * 360}deg"><div><strong>${overall.mastered}</strong><span>mastered</span></div></div>
           <div class="hero-stats"><div><strong>${exercises.length}</strong><span>questions</span></div><div><strong>${overall.attempted}</strong><span>attempted</span></div><div><strong>${overall.accuracy}%</strong><span>accuracy</span></div></div>
           <p>Your work is saved in this browser. A question is mastered when your latest answer is correct.</p></aside></section>
+      ${renderUniversityOverview()}
       <section class="section-wrap"><div class="section-heading"><div><span class="eyebrow">Partial 1 · Tense system</span><h2>Present, past, voice and narrative grammar</h2></div><p>Nine detailed units with extensive mixed-tense decisions, time markers, passive structures and B2 cloze stories.</p></div>
         <div class="topic-grid">${partial1Topics.map((topic, index) => renderTopicCard(topic, index)).join("")}</div></section>
       <section class="final-banner"><div><span class="eyebrow">Partial 1 assessment</span><h2>Test the complete tense system</h2><p>Complete ${partial1Exam} questions drawn from all nine Partial 1 units.</p></div><button class="primary" data-action="partial-1-test">Start Partial 1 test →</button></section>
@@ -87,6 +122,44 @@
         <div class="topic-grid">${partial2Topics.map((topic, index) => renderTopicCard(topic, index)).join("")}</div></section>
       <section class="final-banner"><div><span class="eyebrow">Partial 2 assessment</span><h2>Review the original course topics</h2><p>Complete ${partial2Exam} questions covering all seven Partial 2 units.</p></div><button class="primary" data-action="partial-2-test">Start Partial 2 test →</button></section>
     </div>`;
+  }
+
+  function renderUniversity() {
+    const completed = allPracticeItems.filter((item) => progress[item.id]?.lastCorrect).length;
+    const due = reviewDue().length;
+    app.innerHTML = `<section class="content-page university-page"><div class="page-heading"><span class="eyebrow">Personal English University</span><h1>Build English for real life, study and work.</h1><p>Follow a progressive B1+ → B2 → B2+ → C1 route. Existing grammar remains available below, while the new skill labs turn knowledge into understanding and communication.</p></div><div class="university-summary"><div><strong>${completed}</strong><span>activities mastered</span></div><div><strong>${university.levels.length}</strong><span>levels</span></div><div><strong>${university.projects.length}</strong><span>integrated projects</span></div><button class="primary" data-action="diagnostic">Take the level diagnostic →</button></div><div class="review-strip"><div><span class="eyebrow">Study queue</span><h3>${due ? `${due} activities ready for review` : "Your review queue is clear"}</h3><p>Correct answers return after a longer interval; difficult answers come back sooner.</p></div><button class="secondary" data-action="review-due" ${due ? "" : "disabled"}>Open review queue →</button></div>${renderUniversityOverview()}<section class="curriculum-principles"><span class="eyebrow">Study method</span><h2>Learn → practise → produce → reflect</h2><div class="principle-grid"><div><strong>Input</strong><p>Read and listen to language in meaningful contexts.</p></div><div><strong>Control</strong><p>Use guided grammar, vocabulary and Use of English practice.</p></div><div><strong>Production</strong><p>Write, speak, pronounce and solve open-ended challenges.</p></div><div><strong>Reflection</strong><p>Review mistakes, record progress and return to difficult skills.</p></div></div></section></section>`;
+  }
+
+  function renderLevel(levelId) {
+    const level = university.levels.find((item) => item.id === levelId);
+    if (!level) return renderUniversity();
+    app.innerHTML = `<section class="content-page level-page"><button class="back-link" data-action="university">← University map</button><div class="page-heading"><span class="eyebrow">Level ${escapeHtml(level.code)}</span><h1>${escapeHtml(level.title)}</h1><p>${escapeHtml(level.description)} ${escapeHtml(level.outcome)}</p></div><div class="module-list">${level.modules.map((module, index) => `<article class="module-card"><span class="module-number">${String(index + 1).padStart(2, "0")}</span><div><span class="eyebrow">${escapeHtml(module.skills.join(" · "))}</span><h2>${escapeHtml(module.title)}</h2><p>${escapeHtml(module.focus)}</p><div class="module-actions">${module.skills.map((skillId) => skillById(skillId) ? `<button class="secondary" data-action="skill" data-skill="${skillId}">${escapeHtml(skillById(skillId).title)} lab →</button>` : "").join("")}</div></div></article>`).join("")}</div><section class="exam-route"><div><span class="eyebrow">Milestone</span><h2>${escapeHtml(level.exam)}</h2><p>Complete the modules, save evidence in your portfolio and return here when your skill scores are ready.</p></div><button class="primary" data-action="diagnostic">Open diagnostic →</button></section></section>`;
+  }
+
+  function renderSkillPage(skillId) {
+    const skill = skillById(skillId);
+    if (!skill) return renderUniversity();
+    const items = skillActivities.filter((item) => item.skill === skillId);
+    const quizItems = items.filter((item) => item.mode === "quiz");
+    const challengeItems = items.filter((item) => item.mode === "challenge");
+    app.innerHTML = `<section class="content-page skill-page"><button class="back-link" data-action="university">← University map</button><div class="skill-page-hero"><div><span class="skill-icon skill-${escapeHtml(skill.color)}">${escapeHtml(skill.icon)}</span><span class="eyebrow">Skill lab</span><h1>${escapeHtml(skill.title)}</h1><p>${escapeHtml(skill.description)}</p></div>${quizItems.length ? `<button class="primary" data-action="skill-practice" data-skill="${skill.id}">Start ${quizItems.length}-question practice →</button>` : ""}</div><div class="skill-activity-grid">${items.map((item) => `<article class="activity-card"><div class="activity-card-top"><span class="eyebrow">${escapeHtml(item.level || "All levels")}</span><span>${escapeHtml(item.taskType || (item.mode === "challenge" ? "Production challenge" : "Guided practice"))}</span></div><h2>${escapeHtml(item.title || item.prompt)}</h2><p>${escapeHtml(item.prompt)}</p><div class="activity-card-footer">${item.mode === "challenge" ? `<button class="secondary" data-action="challenge" data-activity="${item.id}">Open challenge →</button>` : `<span>Interactive question</span>`}</div></article>`).join("")}</div>${challengeItems.length ? `<div class="callout"><strong>Production matters.</strong><p>Complete the open challenges after the guided questions. Save a note or recording idea so the skill becomes usable, not merely recognisable.</p></div>` : ""}</section>`;
+  }
+
+  function renderProjects() {
+    app.innerHTML = `<section class="content-page projects-page"><button class="back-link" data-action="university">← University map</button><div class="page-heading"><span class="eyebrow">Integrated projects</span><h1>Turn practice into evidence.</h1><p>Each project combines several skills and creates a piece of work you can revisit, improve and compare over time.</p></div><div class="project-grid">${university.projects.map((project) => `<article class="project-card"><span class="eyebrow">${escapeHtml((university.levels.find((level) => level.id === project.level) || {}).code || project.level)}</span><h2>${escapeHtml(project.title)}</h2><p>${escapeHtml(project.description)}</p><div>${project.skills.map((skillId) => `<span>${escapeHtml(skillById(skillId)?.title || skillId)}</span>`).join("")}</div><button class="secondary" data-action="challenge" data-activity="${project.id}">Open project brief →</button></article>`).join("")}</div></section>`;
+  }
+
+  function renderChallenge(activityId) {
+    const item = activityById(activityId) || university.projects.find((project) => project.id === activityId);
+    if (!item) return renderUniversity();
+    const saved = progress[`note:${item.id}`]?.text || "";
+    const skill = item.skill ? skillById(item.skill) : null;
+    const speechText = item.transcript || item.prompt || item.description || "English Lab practice";
+    app.innerHTML = `<section class="content-page challenge-page"><button class="back-link" data-action="${skill ? "skill" : "projects"}" data-skill="${skill?.id || ""}">← Back to ${skill ? escapeHtml(skill.title) : "projects"}</button><div class="page-heading"><span class="eyebrow">${escapeHtml(item.level || "Integrated project")}</span><h1>${escapeHtml(item.title || "Project brief")}</h1><p>${escapeHtml(item.prompt || item.description)}</p></div><div class="challenge-layout"><article class="challenge-panel"><span class="eyebrow">Preparation</span><ol>${(item.preparation || ["Read the prompt carefully.", "Plan before producing your answer.", "Review your work after completing it."]).map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>${item.transcript ? `<div class="transcript-box"><span class="eyebrow">Listening text</span><p>${escapeHtml(item.transcript)}</p></div>` : ""}<div class="challenge-actions"><button class="secondary" data-action="speak" data-speech="${escapeHtml(speechText)}">▶ Play model text</button>${item.transcript ? `<button class="text-button" data-action="toggle-transcript">Show / hide transcript</button>` : ""}</div></article><aside class="challenge-panel checklist-panel"><span class="eyebrow">Self-review checklist</span><ul>${(item.checklist || ["Content completed", "Meaning is clear", "Grammar checked", "Vocabulary is precise"]).map((check) => `<li><label><input type="checkbox"> ${escapeHtml(check)}</label></li>`).join("")}</ul><label class="eyebrow" for="challenge-note">Reflection note</label><textarea id="challenge-note" placeholder="What did you do well? What will you improve next time?">${escapeHtml(saved)}</textarea><button class="primary" data-action="save-note" data-activity="${item.id}">Save reflection</button><span class="copy-status" aria-live="polite"></span></aside></div><div class="model-note"><span class="eyebrow">Model guidance</span><p>${escapeHtml(item.sample || "Finish your own work before comparing it with a model or asking for feedback.")}</p></div></section>`;
+  }
+
+  function renderDiagnostic() {
+    app.innerHTML = `<section class="content-page"><div class="page-heading"><span class="eyebrow">B1+ → C1 diagnostic</span><h1>Find your best starting point.</h1><p>This short diagnostic samples grammar, vocabulary, reading, Use of English and formal register. It is a starting estimate, not a permanent label.</p></div><button class="primary" data-action="start-diagnostic">Start diagnostic →</button><div class="reference-grid diagnostic-grid"><article class="reference-card"><span>Use it once</span><h2>Answer without notes</h2><p>Your first result is more useful when it reflects your current control and intuition.</p></article><article class="reference-card"><span>Read the feedback</span><h2>Look for patterns</h2><p>Each answer explains the decision and points toward a skill lab.</p></article><article class="reference-card"><span>Revisit later</span><h2>Compare progress</h2><p>Repeat after a study cycle and compare the level signals with your production work.</p></article></div></section>`;
   }
 
   function renderTopicCard(topic, index) {
@@ -138,8 +211,11 @@
     if (kind === "all") { items = exercises; title = "All-topic practice"; }
     if (kind === "partial1") { items = exercises.filter((item) => item.exam === 1); title = "Partial 1 exam"; }
     if (kind === "partial2") { items = exercises.filter((item) => item.exam === 2); title = "Partial 2 exam"; }
+    if (kind === "skill") { items = skillActivities.filter((item) => item.skill === topicId && item.mode === "quiz"); title = `${skillById(topicId)?.title || "Skill"} practice`; }
+    if (kind === "diagnostic") { items = university.diagnostic || []; title = "B1+ → C1 diagnostic"; }
+    if (kind === "review") { items = reviewDue(); title = "Spaced review queue"; }
     if (kind === "mistakes") { items = mistakes(); title = "Mistake review"; }
-    session = { kind, topicId, title, items: kind === "partial1" || kind === "partial2" || kind === "quick" ? items : shuffle(items) };
+    session = { kind, topicId, title, items: kind === "partial1" || kind === "partial2" || kind === "quick" || kind === "diagnostic" ? items : shuffle(items) };
     current = 0; selected = null; typedAnswer = ""; answered = false; sessionCorrect = 0; sessionDone = false;
     view = "session"; closeMenu(); render();
   }
@@ -154,7 +230,7 @@
     const topic = topicById(exercise.topic);
     const progressWidth = ((current + (answered ? 1 : 0)) / session.items.length) * 100;
     const correct = answered && isCorrectAnswer(exercise);
-    app.innerHTML = `<section class="practice-page"><div class="quiz-layout"><aside class="quiz-sidebar"><button class="back-link" data-action="exit-session">← Exit session</button><span class="eyebrow">${session.kind === "partial1" ? "All nine Partial 1 units" : session.kind === "partial2" ? "All seven Partial 2 units" : escapeHtml(topic.title)}</span><h2>${escapeHtml(session.title)}</h2><div class="session-stat"><span>Progress</span><strong>${current + 1} / ${session.items.length}</strong></div><div class="progress-track"><span style="width:${progressWidth}%"></span></div><div class="session-stat"><span>Correct</span><strong>${sessionCorrect}</strong></div><p class="sidebar-tip"><strong>Strategy:</strong> identify the context before choosing the grammar form.</p></aside>
+    app.innerHTML = `<section class="practice-page"><div class="quiz-layout"><aside class="quiz-sidebar"><button class="back-link" data-action="exit-session">← Exit session</button><span class="eyebrow">${session.kind === "partial1" ? "All nine Partial 1 units" : session.kind === "partial2" ? "All seven Partial 2 units" : session.kind === "diagnostic" ? "Six level signals" : escapeHtml(topic.title)}</span><h2>${escapeHtml(session.title)}</h2><div class="session-stat"><span>Progress</span><strong>${current + 1} / ${session.items.length}</strong></div><div class="progress-track"><span style="width:${progressWidth}%"></span></div><div class="session-stat"><span>Correct</span><strong>${sessionCorrect}</strong></div><p class="sidebar-tip"><strong>Strategy:</strong> identify the context before choosing the grammar form.</p></aside>
       <article class="question-card ${exercise.passage ? "reading-question" : ""}"><div class="question-meta"><span class="topic-pill">${escapeHtml(topic.icon)} ${escapeHtml(topic.title)}</span><span>${escapeHtml(exercise.taskType || (exercise.type === "text" ? "Written answer" : "Multiple choice"))}</span></div>
       ${exercise.passage ? `<div class="reading-box"><span>Reading task</span><h3>${escapeHtml(exercise.passageTitle)}</h3><p>${escapeHtml(exercise.passage)}</p></div>` : ""}<p class="instruction">${escapeHtml(exercise.instruction)}</p><h2>${escapeHtml(exercise.prompt)}</h2>
       ${exercise.type === "choice" ? renderOptions(exercise) : `<div class="written-answer"><label for="written-input">Your answer</label><input id="written-input" type="text" autocomplete="off" spellcheck="false" value="${escapeHtml(typedAnswer)}" ${answered ? "disabled" : ""}><small>Capitalisation and final punctuation are ignored.</small></div>`}
@@ -175,30 +251,39 @@
 
   function renderResults() {
     const score = percent(sessionCorrect, session.items.length);
-    const breakdown = topics.map((topic) => {
-      const topicItems = session.items.filter((item) => item.topic === topic.id);
+    const groupIds = [...new Set(session.items.map((item) => item.topic || item.skill || "diagnostic"))];
+    const breakdown = groupIds.map((groupId) => {
+      const topic = topicById(groupId);
+      const topicItems = session.items.filter((item) => (item.topic || item.skill || "diagnostic") === groupId);
       if (!topicItems.length) return "";
       const correctItems = topicItems.filter((item) => progress[item.id]?.lastCorrect).length;
       return `<div><span>${escapeHtml(topic.title)}</span><strong>${correctItems} / ${topicItems.length}</strong></div>`;
     }).join("");
-    app.innerHTML = `<section class="practice-page"><div class="results-card wide-results"><span class="eyebrow">Session completed</span><div class="result-score">${score}<sup>%</sup></div><h2>${score >= 80 ? "Strong performance" : score >= 65 ? "Good progress" : "Keep practising"}</h2><p>You answered <strong>${sessionCorrect}</strong> of <strong>${session.items.length}</strong> questions correctly.</p><div class="result-breakdown">${breakdown}</div><div class="result-actions">${mistakes().length ? '<button class="primary" data-action="review-mistakes">Review mistakes</button>' : ""}<button class="secondary" data-action="repeat-session">Try again</button><button class="text-button" data-action="home">Back to topics</button></div></div></section>`;
+    const diagnosticLevel = session.kind === "diagnostic" ? score >= 84 ? "C1 starting signal" : score >= 67 ? "B2+ starting signal" : score >= 50 ? "B2 starting signal" : "B1+ starting signal" : "";
+    app.innerHTML = `<section class="practice-page"><div class="results-card wide-results"><span class="eyebrow">Session completed</span><div class="result-score">${score}<sup>%</sup></div><h2>${session.kind === "diagnostic" ? diagnosticLevel : score >= 80 ? "Strong performance" : score >= 65 ? "Good progress" : "Keep practising"}</h2><p>You answered <strong>${sessionCorrect}</strong> of <strong>${session.items.length}</strong> questions correctly.</p>${session.kind === "diagnostic" ? `<div class="diagnostic-result"><strong>This is a starting estimate, not a permanent label.</strong><span>Open the recommended skill labs, produce something and repeat the diagnostic after a study cycle.</span></div>` : ""}<div class="result-breakdown">${breakdown}</div><div class="result-actions">${mistakes().length ? '<button class="primary" data-action="review-mistakes">Review mistakes</button>' : ""}${reviewDue().length ? '<button class="secondary" data-action="review-due">Review due</button>' : ""}<button class="secondary" data-action="repeat-session">Try again</button><button class="text-button" data-action="home">Back to topics</button></div></div></section>`;
   }
 
   function renderMistakesPage() {
     const items = mistakes();
-    app.innerHTML = `<section class="content-page"><div class="page-heading"><span class="eyebrow">Targeted review</span><h1>My mistakes</h1><p>A question leaves this list when your latest answer is correct.</p></div>${items.length ? `<div class="mistake-summary"><div><strong>${items.length}</strong><span>questions to master</span></div><button class="primary" data-action="review-mistakes">Practise these mistakes</button></div><div class="mistake-list">${items.map((item) => `<article><span>${escapeHtml(topicById(item.topic).icon)}</span><div><small>${escapeHtml(topicById(item.topic).title)}</small><p>${escapeHtml(item.prompt)}</p></div><strong>${item.type === "choice" ? escapeHtml(item.options[item.answer]) : escapeHtml(item.answers[0])}</strong></article>`).join("")}</div>` : `<div class="empty-state"><span>✓</span><h2>Nothing to review</h2><p>You have no saved mistakes.</p><button class="primary" data-action="home">Choose a topic</button></div>`}</section>`;
+    app.innerHTML = `<section class="content-page"><div class="page-heading"><span class="eyebrow">Targeted review</span><h1>My mistakes</h1><p>A question leaves this list when your latest answer is correct. Spaced review also brings difficult questions back before they are forgotten.</p></div>${items.length ? `<div class="mistake-summary"><div><strong>${items.length}</strong><span>questions to master</span></div><button class="primary" data-action="review-mistakes">Practise these mistakes</button></div><div class="mistake-list">${items.map((item) => { const record = progress[item.id] || {}; const itemTopic = topicById(item.topic || item.skill); return `<article><span>${escapeHtml(itemTopic.icon)}</span><div><small>${escapeHtml(itemTopic.title)} · ${escapeHtml(record.errorType || "review")}</small><p>${escapeHtml(item.prompt)}</p></div><strong>${item.type === "choice" ? escapeHtml(item.options[item.answer]) : escapeHtml(item.answers?.[0] || item.sample || "Open challenge")}</strong></article>`; }).join("")}</div>` : `<div class="empty-state"><span>✓</span><h2>Nothing to review</h2><p>You have no saved mistakes.</p><button class="primary" data-action="home">Choose a topic</button></div>`}</section>`;
   }
 
   function updateChrome() {
     document.querySelector(".nav-count").textContent = mistakes().length;
     document.querySelectorAll("#main-nav [data-action]").forEach((button) => {
-      const active = (view === "home" && button.dataset.action === "home") || (view === "mistakes" && button.dataset.action === "mistakes") || (session?.kind === "partial1" && view === "session" && button.dataset.action === "partial-1-test") || (session?.kind === "partial2" && view === "session" && button.dataset.action === "partial-2-test");
+      const active = (view === "home" && button.dataset.action === "home") || (view === "university" && button.dataset.action === "university") || (view === "skill" && button.dataset.action === "skills") || (view === "diagnostic" && button.dataset.action === "diagnostic") || (view === "mistakes" && button.dataset.action === "mistakes") || (session?.kind === "partial1" && view === "session" && button.dataset.action === "partial-1-test") || (session?.kind === "partial2" && view === "session" && button.dataset.action === "partial-2-test");
       button.classList.toggle("active", active);
     });
   }
 
   function render() {
     if (view === "home") renderHome();
+    else if (view === "university") renderUniversity();
+    else if (view === "level") renderLevel(activeSkill);
+    else if (view === "skill") renderSkillPage(activeSkill);
+    else if (view === "projects") renderProjects();
+    else if (view === "challenge") renderChallenge(activeChallenge);
+    else if (view === "diagnostic") renderDiagnostic();
     else if (view === "topic") renderTopic();
     else if (view === "session") renderSession();
     else renderMistakesPage();
@@ -206,7 +291,11 @@
   }
 
   function navigate(nextView, topicId = null) {
-    view = nextView; activeTopic = topicId || activeTopic; session = nextView === "session" ? session : null; closeMenu(); render();
+    view = nextView;
+    if (nextView === "topic") activeTopic = topicId || activeTopic;
+    if (nextView === "skill" || nextView === "level") activeSkill = topicId || activeSkill;
+    if (nextView === "challenge") activeChallenge = topicId || activeChallenge;
+    session = nextView === "session" ? session : null; closeMenu(); render();
     window.scrollTo({ top: 0, behavior: "smooth" }); app.focus({ preventScroll: true });
   }
 
@@ -241,6 +330,19 @@
     const action = control.dataset.action;
     if (action === "menu") { const open = nav.classList.toggle("open"); menuButton.setAttribute("aria-expanded", String(open)); return; }
     if (action === "home") { navigate("home"); return; }
+    if (action === "university") { navigate("university"); return; }
+    if (action === "skills") { navigate("university"); return; }
+    if (action === "level") { navigate("level", control.dataset.level); return; }
+    if (action === "skill") { navigate("skill", control.dataset.skill); return; }
+    if (action === "projects") { navigate("projects"); return; }
+    if (action === "challenge") { navigate("challenge", control.dataset.activity); return; }
+    if (action === "skill-practice") { startSession("skill", control.dataset.skill); return; }
+    if (action === "diagnostic") { navigate("diagnostic"); return; }
+    if (action === "start-diagnostic") { startSession("diagnostic"); return; }
+    if (action === "review-due") { startSession("review"); return; }
+    if (action === "speak") { if ("speechSynthesis" in window) { window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(control.dataset.speech || "English Lab practice"); utterance.lang = "en-US"; utterance.rate = 0.9; window.speechSynthesis.speak(utterance); } return; }
+    if (action === "toggle-transcript") { document.querySelector(".transcript-box")?.classList.toggle("is-hidden"); return; }
+    if (action === "save-note") { const note = document.querySelector("#challenge-note")?.value.trim() || ""; progress[`note:${control.dataset.activity}`] = { text: note, updatedAt: new Date().toISOString() }; saveProgress(); const status = control.parentElement.querySelector(".copy-status"); if (status) { status.textContent = "Reflection saved."; window.setTimeout(() => { status.textContent = ""; }, 2200); } return; }
     if (action === "topic") { navigate("topic", control.dataset.topic); return; }
     if (action === "topic-practice") { startSession("topic", control.dataset.topic); return; }
     if (action === "quick-test") { startSession("quick", control.dataset.topic); return; }
@@ -249,12 +351,16 @@
     if (action === "partial-2-test") { startSession("partial2"); return; }
     if (action === "mistakes") { navigate("mistakes"); return; }
     if (action === "review-mistakes") { startSession("mistakes"); return; }
-    if (action === "exit-session") { session?.topicId ? navigate("topic", session.topicId) : navigate("home"); return; }
+    if (action === "exit-session") { if (session?.kind === "skill") navigate("skill", session.topicId); else if (session?.kind === "diagnostic") navigate("diagnostic"); else session?.topicId ? navigate("topic", session.topicId) : navigate("home"); return; }
     if (action === "copy-prompt") { copyPrompt(control); return; }
     if (action === "submit" && !answered) {
       const exercise = session.items[current]; const correct = isCorrectAnswer(exercise);
       const old = progress[exercise.id] || { attempts: 0, correct: 0 };
-      progress[exercise.id] = { attempts: old.attempts + 1, correct: old.correct + (correct ? 1 : 0), lastCorrect: correct, lastAnswer: exercise.type === "choice" ? selected : typedAnswer };
+      const errorType = correct ? null : exercise.passage ? "context reading" : exercise.type === "text" ? "written production" : "form or meaning choice";
+      const intervalDays = correct ? Math.min(30, old.intervalDays ? old.intervalDays * 2 : 1) : 0;
+      const nextReview = new Date(Date.now() + intervalDays * 86400000).toISOString();
+      const history = [...(old.history || []), { at: new Date().toISOString(), correct, errorType, answer: exercise.type === "choice" ? selected : typedAnswer }].slice(-8);
+      progress[exercise.id] = { attempts: old.attempts + 1, correct: old.correct + (correct ? 1 : 0), lastCorrect: correct, lastAnswer: exercise.type === "choice" ? selected : typedAnswer, errorType, intervalDays, nextReview, history };
       if (correct) sessionCorrect += 1; answered = true; saveProgress(); render(); return;
     }
     if (action === "next") { if (current === session.items.length - 1) sessionDone = true; else { current += 1; selected = null; typedAnswer = ""; answered = false; } render(); return; }
@@ -265,7 +371,9 @@
   const params = new URLSearchParams(window.location.search);
   const requestedTopic = params.get("topic");
   const requestedMode = params.get("mode");
-  if (requestedTopic && topicById(requestedTopic)) { activeTopic = requestedTopic; view = "topic"; render(); }
+  if (requestedTopic && topics.some((topic) => topic.id === requestedTopic)) { activeTopic = requestedTopic; view = "topic"; render(); }
+  else if (requestedMode === "university") navigate("university");
+  else if (requestedMode === "diagnostic") navigate("diagnostic");
   else if (requestedMode === "partial1") startSession("partial1");
   else if (requestedMode === "partial2") startSession("partial2");
   else if (requestedMode === "all") startSession("all");

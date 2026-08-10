@@ -14,6 +14,17 @@ An English-only interactive B2 grammar course built with plain HTML, CSS and Jav
 - Topic progress and mistake review saved in the browser
 - Copyable text prompts for optional voice practice
 
+## Personal English University route
+
+The grammar bank is now the B2 core of a larger four-level route:
+
+- B1+ — Foundation and control
+- B2 — Functional and academic English
+- B2+ — Range, nuance and fluency
+- C1 — Advanced, natural and flexible English
+
+The University dashboard adds nine skill labs (Grammar, Vocabulary, Reading, Writing, Listening, Speaking, Pronunciation, Use of English and Critical Thinking), 22 curriculum modules, eight integrated projects, open-ended production challenges and a B1+→C1 diagnostic. Listening and pronunciation activities use the browser SpeechSynthesis API when supported and provide text fallbacks.
+
 Future perfect is intentionally outside the course scope.
 
 ## Local use
